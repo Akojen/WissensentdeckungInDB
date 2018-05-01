@@ -1,7 +1,7 @@
 ---
 title: "Wissensentdeckung in Datenbanken SoSe 2018"
 subtitle: "Lösungsvorschlag Übungsblatt 01"
-author: "Sebastian Buschjäger, Malte Jastrow"  # Alexander Kojen
+author: "Alexander Kojen"
 output: pdf_document
 ---
 
@@ -13,16 +13,16 @@ knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
 ### a)
 Stichprobenraum
 $$
-\Omega = Kopf, Zahl
+\Omega = \{Kopf, Zahl\}
 $$
 Sigma-Algebren:
 $$
 \begin{aligned}
-\mathfrak{A}_1 = \{(),Kopf,Zahl,(Kopf,Zahl)\} \\
-\mathfrak{A}_2 = \{(),(Kopf,Zahl)\}
+\mathfrak{A}_1 = \{\{\},Kopf,Zahl,(Kopf,Zahl)\} \\
+\mathfrak{A}_2 = \{\{\},(Kopf,Zahl)\} \\ \\
+\text{Sinnvoller ist Algebra 1.}
 \end{aligned}
 $$
-Sinnvoller ist Algebra 1.
 
 
 
@@ -30,7 +30,7 @@ Sinnvoller ist Algebra 1.
 Wahrscheinlichkeitsfunktion
 $$
 \begin{aligned}
-P() =    \emptyset  \\
+P(\{\}) =    \emptyset  \\
 P(Kopf) =    \frac{1}{2} \\
 P(Zahl) =    \frac{1}{2} \\
 P(Kopf, Zahl) =    1 \\
@@ -53,8 +53,8 @@ $$
 Empirische Dichtefunktion
 $$
 f_X(x) = \begin{cases}
-                  \frac{1}{2}, & \text{falls 1}  ,\\
-                  \frac{1}{2}, & \text{falls 0}  ,\\
+                  \frac{1}{2}, & \text{falls 1}  ,\\\\
+                  \frac{1}{2}, & \text{falls 0}  ,\\\\
                   \emptyset , & \text{sonst}  .
           \end{cases}
 $$
@@ -66,9 +66,9 @@ $$
 $$
 Varianz
 $$
-\mathrm{Var}(X) = (1-\frac{1}{2})^2*\frac{1}{2} + (0-\frac{1}{2})^2*\frac{1}{2} = \frac{1}{8} + \frac{1}{8} = \frac{1}{4}
+\mathrm{Var}(X) = \frac{(1-\frac{1}{2})^2 + (0-\frac{1}{2})^2}{2} = \frac{1}{4} \\
+\text{Die Zufallsvariable ist gleich- oder binomialverteilt.}
 $$
-Die Zufallsvariable ist gleich- oder binomialverteilt.
 
 ### d)
 Erwartungswert der Summe
@@ -79,16 +79,14 @@ $$
 Varianz der Summe
 
 $$
-\mathrm{Var}(\sum_{i = 1}^n X_i) = n * 0,5 * (1-0,5)
+\mathrm{Var}(\sum_{i = 1}^n X_i) = n * 0,5 * (1-0,5) \\
+\text{Die Summe ist binomialverteilt.}
 $$
-Die Summe ist binomialverteilt.
 
 ## Aufgabe 2
 
 ### a)
 ```{r}
-
-### To Do: Als Schleifen machen:
 
 sapply(iris[c(1,2,3,4)], mean)
 
@@ -187,7 +185,7 @@ DiagrammHelper <- function(Studierende) {
   return(ns)
 }
 set.seed(2018)
-#barplot(DiagrammHelper(100))
+barplot(DiagrammHelper(100))
   
 ```
 
@@ -196,12 +194,10 @@ set.seed(2018)
 
 ## Aufgabe 4
 ### a)
-x1 <- runif(2,-1,1)
-x2 <- runif(2,-1,1)
 $$
 \begin{aligned}
 P(||X|| < 1) =&P()  \\
-=&P()  
+=&P()
 \end{aligned}
 $$
 
