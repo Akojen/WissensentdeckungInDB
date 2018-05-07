@@ -1,7 +1,7 @@
 ---
 title: "Wissensentdeckung in Datenbanken SoSe 2018"
 subtitle: "Lösungsvorschlag Übungsblatt 02"
-author: "Alexander Kojen, "  # Hier Die Nammen aller Gruppenmitglieder eintragen!
+author: "Alexander Kojen, Jonas Kauke"  # Hier Die Nammen aller Gruppenmitglieder eintragen!
 output: pdf_document
 ---
 
