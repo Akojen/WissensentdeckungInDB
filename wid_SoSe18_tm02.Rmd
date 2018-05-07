@@ -8,6 +8,12 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
 ```
+
+```{r}
+library(mvtnorm)
+
+```
+
 ### a)
 Kovarianzmatrix
 ```{r}
@@ -126,7 +132,7 @@ print(content)
 ```{r}
 ##Wie viele Tabellen stellt die Datenbank zur Verfügung und wie viele Reviews enthalten diese Tabellen? Welche Attribute sehen Sie?
 length(tables)
-noReviews <- dbGetQuery(mydb, 'SELECT Count(score) FROM reviews')
+noReviews <- dbGetQuery(mydb, 'SELECT Count(reviewid) FROM reviews')
 print(noReviews)
 
 reviewAttributes <- dbGetQuery(mydb, 'PRAGMA table_info("reviews")')
@@ -142,9 +148,9 @@ print(reviewAttributeNames)
 # cent insgesamt erhalten?
 # Hinweis: Achten Sie darauf, die Künstlernamen in Anführungszeichen zu schreiben, damit Leerze-
 # ichen korrekt erkannt werden.
-noBeatlesReviews <- dbGetQuery(mydb, 'SELECT Count(score) FROM reviews WHERE artist = "the beatles"')
+noBeatlesReviews <- dbGetQuery(mydb, 'SELECT Count(reviewid) FROM reviews WHERE artist = "the beatles"')
 print(noBeatlesReviews)
-no50centReviews <- dbGetQuery(mydb, 'SELECT Count(score) FROM reviews WHERE artist = "50 cent"')
+no50centReviews <- dbGetQuery(mydb, 'SELECT Count(reviewid) FROM reviews WHERE artist = "50 cent"')
 print(no50centReviews)
 
 ```
@@ -152,7 +158,7 @@ print(no50centReviews)
 ## c)
 ```{r}
 # (1 Punkt) Welchen durchschnittlichen score haben the beatles bzw. 50 cent bekommen?
-avgBeatlesReviews <- dbGetQuery(mydb, 'SELECT avg(score) FROM reviews WHERE artist = "the beatles" or artist = "50 cent"')
+avgBeatlesReviews <- dbGetQuery(mydb, 'SELECT avg(score) FROM reviews WHERE artist = "the beatles"')
 print(avgBeatlesReviews)
 avg50centReviews <- dbGetQuery(mydb, 'SELECT avg(score) FROM reviews WHERE artist = "50 cent"')
 print(avg50centReviews) 
@@ -162,7 +168,7 @@ print(avg50centReviews)
 ## d)
 ```{r}
 # (2 Punkt) Geben Sie eine Liste aller Künstler an, für die mindestens 20 Reviews in der Datenbank hinterlegt sind.
-list20ReviewArtists <- dbGetQuery(mydb, 'SELECT DISTINCT(rev.artist) FROM reviews rev WHERE (SELECT COUNT(score) FROM reviews WHERE artist = rev.artist) >= 20')
+list20ReviewArtists <- dbGetQuery(mydb, 'SELECT DISTINCT(rev.artist) FROM reviews rev WHERE (SELECT COUNT(reviewid) FROM reviews WHERE artist = rev.artist) >= 20')
 print(list20ReviewArtists)
 ##Ergebnis = 44 artists. Verarbeitung dauert 2-3 Minuten. Effizintere Lösung?
 ```
