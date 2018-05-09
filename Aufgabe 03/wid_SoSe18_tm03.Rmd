@@ -1,7 +1,7 @@
 ---
 title: "Wissensentdeckung in Datenbanken SoSe 2018"
 subtitle: "Übungsblatt 03"
-author: "Sebastian Buschjäger, Malte Jastrow"  # Hier Die Nammen aller Gruppenmitglieder eintragen!
+author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier Die Nammen aller Gruppenmitglieder eintragen!
 output: pdf_document
 ---
 
@@ -165,12 +165,17 @@ mknn = function(features, y, k, new.data) {
   ## Rate ob Klassifikation oder Regression
   classification = is.factor(y)
   
-  
+  print(new.data)
   
   
   ## Vorhersage
   if (classification) {
     ## Entweder den Modalwert bei Klassifikation
+    for (i in 1:nrow(new.data)){
+      for(j in 1:nrow(features[i,])){
+        d <- dist(rbind(features[j,],new.data[i,]))
+      }
+    }
     
   } else {
     ## Oder den Mittelwert bei Regression
@@ -181,6 +186,13 @@ mknn = function(features, y, k, new.data) {
 ### a)
 Klassifikation
 ```{r}
+
+indices <- sample(1:150,120, replace=F)
+train <- iris[indices,1:4]
+target <- iris[indices,5]
+test <- iris[setdiff(c(1:150),indices),1:4]
+
+mknn(train,target,1,test)
 
 ```
 
