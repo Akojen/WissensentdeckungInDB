@@ -10,10 +10,22 @@ knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
 ```
 ## Aufgabe 1
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+```
+## Aufgabe 1
+
 ### a)
 a-priori Wahrscheinlichkeiten:
 ```{r}
 
+p_schmack = pbinom(1, size=4, prob=0.5) ##dbinom gives the density, pbinom gives the distribution function, qbinom gives the quantile function and rbinom generates random deviates.
+p_unschmack = pgeom(3, prob = 0.3)
+
+print(p_schmack)
+print(p_unschmack)
+
+##Kann nicht sein.. da Summe != 1
 ```
 
 
@@ -27,7 +39,10 @@ rownames(costs) = c("Schmackhaft", "Ungeniessbar")
 
 Werte einfügen
 ```{r}
-
+costs[1,1] = 40-5-5
+costs[1,2] = -5
+costs[2,1] = -20-5-5
+costs[2,2] = -5
 ```
 
 Ausgabe der Kostenmatrix
@@ -206,8 +221,21 @@ Regression
 
 
 ## Aufgabe 4
+## Aufgabe 4
 
 ### a)
+$$
+\text{Zu zeigen:}\\
+\forall B \subseteq C : supp(A \cup B) 	\geq supp(A \cup C) \\
+	\equiv supp(A \cup B) \leq max[supp(A), supp(B)] \geq \\ supp(A \cup C) \leq max[supp(A), supp(C)] \\
+	\equiv max[supp(A), supp(B)] \geq max[supp(A), supp(C)] \\
+	\equiv max[supp(B)] \geq max[supp(C)] \\
+	\equiv supp(B) \geq supp(C) \\
+	\equiv B \subseteq C
+
+$$
+### b)
+
 ### b)
 \begin{itemize}
   \item[1)]
@@ -219,3 +247,14 @@ Regression
 \end{itemize}
 
 ### c)
+$$
+\text{1)} \\
+supp(Bier \rightarrow Grillkohle) = \frac{1}{2} \\
+conf(Bier \rightarrow Grillkohle) = \frac{2}{3} \\
+lift(Bier \rightarrow Grillkohle) = \frac{4*?}{\frac{3}{4}*\frac{1}{2}}=? \\
+
+\text{2)} \\
+supp(Bier,Grillkohle \rightarrow Zahnpaste) = \frac{1}{4} \\
+conf(Bier,Grillkohle \rightarrow Zahnpaste) = \frac{1}{2} \\
+lift(Bier \rightarrow Grillkohle) = \frac{4*?}{\frac{3}{4}*\frac{1}{2}}=? \\
+$$
