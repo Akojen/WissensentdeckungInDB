@@ -1,0 +1,239 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Lösungsvorschlag Übungsblatt 01"
+author: "Alexander Kojen"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+```
+## Aufgabe 1
+
+### a)
+Stichprobenraum
+$$
+\Omega = \{Kopf, Zahl\}
+$$
+Sigma-Algebren:
+$$
+\begin{aligned}
+\mathfrak{A}_1 = \{\{\},Kopf,Zahl,(Kopf,Zahl)\} \\
+\mathfrak{A}_2 = \{\{\},(Kopf,Zahl)\} \\ \\
+\text{Sinnvoller ist Algebra 1.}
+\end{aligned}
+$$
+
+
+
+### b)
+Wahrscheinlichkeitsfunktion
+$$
+\begin{aligned}
+P(\{\}) =    \emptyset  \\
+P(Kopf) =    \frac{1}{2} \\
+P(Zahl) =    \frac{1}{2} \\
+P(Kopf, Zahl) =    1 \\
+\end{aligned}
+$$
+Sei im Folgenden Kopf mit 0 und Zahl mit 1 kodiert.\\
+
+Empirische Verteilungsfunktion
+$$
+\begin{aligned}
+F_X(x) = 
+    \begin{cases}
+      0, & \text{x < 0}  ,\\
+      \frac{1}{2}, & 0\ge x \le 1   ,\\
+      1, & x>1  .
+    \end{cases}
+\end{aligned}
+$$
+
+Empirische Dichtefunktion
+$$
+f_X(x) = \begin{cases}
+                  \frac{1}{2}, & \text{falls 1}  ,\\\\
+                  \frac{1}{2}, & \text{falls 0}  ,\\\\
+                  \emptyset , & \text{sonst}  .
+          \end{cases}
+$$
+
+### c)
+Erwartungswert
+$$
+\mathrm{E}(X) = 1 * \frac{1}{2} + 0 * \frac{1}{2} = \frac{1}{2}
+$$
+Varianz
+$$
+\mathrm{Var}(X) = \frac{(1-\frac{1}{2})^2 + (0-\frac{1}{2})^2}{2} = \frac{1}{4} \\
+\text{Die Zufallsvariable ist gleich- oder binomialverteilt.}
+$$
+
+### d)
+Erwartungswert der Summe
+
+$$
+\mathrm{E}(\sum_{i = 1}^n X_i) = n * 0,5
+$$
+Varianz der Summe
+
+$$
+\mathrm{Var}(\sum_{i = 1}^n X_i) = n * 0,5 * (1-0,5) \\
+\text{Die Summe ist binomialverteilt.}
+$$
+
+## Aufgabe 2
+
+### a)
+```{r}
+
+sapply(iris[c(1,2,3,4)], mean)
+
+sapply(iris[c(1,2,3,4)], median)
+
+sapply(iris[c(1,2,3,4)], var)
+
+sapply(iris[c(1,2,3,4)], min)
+
+sapply(iris[c(1,2,3,4)], max)
+
+table(iris$Species)
+
+
+```
+Modalwert: (setosa, versicolor, virginica)
+
+### b)
+```{r}
+
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="setosa"), mean)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="setosa"), median)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="setosa"), var)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="setosa"), min)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="setosa"), max)
+
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="versicolor"), mean)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="versicolor"), median)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="versicolor"), var)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="versicolor"), min)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="versicolor"), max)
+
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="virginica"), mean)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="virginica"), median)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="virginica"), var)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="virginica"), min)
+sapply(subset(iris[c(1,2,3,4)],iris$Species=="virginica"), max)
+
+```
+
+### c)
+```{r}
+
+#plot
+#(data$height, data$weight, col = data$name, pch = 19,
+#xlab = "Größe", ylab = "Gewicht")
+#legend("bottomright", legend = data$name, col = 1:3, pch = 19)
+
+par(mfrow = c(3, 1))
+hist(subset(iris$Petal.Length,iris$Species=="setosa"))
+hist(subset(iris$Petal.Length,iris$Species=="versicolor"))
+hist(subset(iris$Petal.Length,iris$Species=="virginica"))
+
+```
+
+### d)
+```{r}
+
+plot(subset(iris[c(1,2,3,4)]), col=iris$Species)
+
+```
+
+
+## Aufgabe 3
+### a)
+
+
+Simulation
+```{r}
+Geburtstag <- function(Studierende, n = 1000) {
+  ns <- local(1000) #Versuchsvektor (Logical)
+  xs <- numeric(Studierende) #Geburtstagsvektor
+  for (i in 1:n) { ## 1000 Versuche
+    for (k in 1:Studierende) { ## Für alle Studierenden:
+      x <- sample(1:365, 1) ##Wähle zufällig ein Geburtsdatum
+      xs[k] <- x #und befülle den Geburtstagsvektor
+    }
+    bool <- any(duplicated(xs)) #Trage für den Versuch TRUE oder FALSE ein
+    ns[i] <- bool #Befülle den Versuchsvektor
+  }
+  return(sum(ns, na.rm=TRUE) / n) #Gib Wahrscheinlichkeit bei 1000 Versuchen zurück
+}
+
+set.seed(2018) #Damit sich die "random" Ergebnisse wiederholen
+Geburtstag(31)
+```
+
+### b)
+Grafik
+```{r}
+DiagrammHelper <- function(Studierende) {
+  ns <- numeric(Studierende) #Versuchsvektor
+  for (i in 1:Studierende) {
+    ns[i] <- Geburtstag(i) 
+  }
+  return(ns)
+}
+set.seed(2018)
+barplot(DiagrammHelper(100))
+  
+```
+
+
+
+
+## Aufgabe 4
+### a)
+$$
+\begin{aligned}
+P(||X|| < 1) =&P()  \\
+=&P()
+\end{aligned}
+$$
+
+### b)
+aus a) folgt:
+$$
+\pi = 
+$$
+mit mit dem angegebenen erwartungstreuen Schätzer ergibt sich daraus:
+$$
+\hat{\pi} =
+$$
+Der Schätzer $\hat{\pi}$ ist erwartungstreu, da:
+$$
+\begin{aligned}
+E(\hat \pi) =&  \\
+=& \\
+=& \pi
+\end{aligned}
+$$
+
+
+
+### c)
+Simulation:
+```{r}
+piHat <- function(n){
+ 
+   
+}
+```
+
+Visualisierung:
+```{r}
+
+```
+
+
+
