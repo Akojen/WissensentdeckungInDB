@@ -1,0 +1,208 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Übungsblatt 03"
+author: "Sebastian Buschjäger, Malte Jastrow"  # Hier Die Nammen aller Gruppenmitglieder eintragen!
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+```
+## Aufgabe 1
+
+### a)
+a-priori Wahrscheinlichkeiten:
+```{r}
+
+```
+
+
+Kostenmatrix
+```{r}
+
+costs = matrix(0, nrow = 2, ncol = 2)
+colnames(costs) = c("Zubereiten", "Freilassen")
+rownames(costs) = c("Schmackhaft", "Ungeniessbar")
+```
+
+Werte einfügen
+```{r}
+
+```
+
+Ausgabe der Kostenmatrix
+```{r}
+costs
+```
+
+### b)
+
+Erwartete Kosten Klasse A:
+```{r}
+
+```
+
+Erwartete Kosten Klasse B:
+```{r}
+
+```
+
+Enscheidung der datenunabhängigen Regel:
+
+
+### c)
+Formel aus dem Skript in Abhängigkeit der beobachteten Anzahl Streifen $k$:  
+$$
+C_j(k) = 
+$$ 
+Formel mit entsprechenden Verteilungen für jedes $k$ auswerten und Entscheidung treffen:
+
+```{r}
+
+```
+
+
+Die Regel besagt: 
+
+
+### d)
+Datenunabhängige Regel:
+Herleitung
+$$
+\begin{aligned}
+& P(\textrm{Fehler}) \\
+= &
+\end{aligned}
+$$  
+oder direkt in R
+```{r}
+
+```
+
+
+
+
+Datenabhängige Regel:
+Herleitung
+$$
+
+$$
+oder direkt in R
+```{r}
+
+```
+Interpretation:
+
+### e)
+Allgemeiner Formel
+$$
+
+$$
+Datenunabhängige Regel:
+
+
+Rechnung fuer die Datenabhängige Regel:
+```{r}
+
+```
+
+Interpretation:
+
+## Aufgabe 2
+```{r}
+load("fish.RData")
+```
+
+Neue Vorraussetzungen:
+```{r}
+
+```
+
+
+1. NV-Annahme:
+```{r}
+
+```
+Nur für k = 2 ist ein Fisch schmackhaft
+Problem: NV-Annahme nicht unbedingt gerechtfertigt
+
+2. Alte Verteilungsannahme, Parameter schaetzen:
+```{r}
+
+```
+Hier fuer k = (2, 3)
+Verteilugnsannahme scheint hier aus der Literatur gerechtfertigt
+
+
+3. Relative Haeufigkeiten aus den Daten:
+```{r}
+
+```
+
+Problem hier: Manche k wurden nie realisiert, für diese
+kann daher keine Entscheidung getroffen werden. Es scheinen noch
+zu wenige Beobachtungen zu sein
+
+Sinnvoll erscheint daher Variante 2
+
+
+## Aufgabe 3
+Allgemeines Funktionsgerüst:
+```{r}
+## mknn - Implementiert das knn Verfahren mit euklidischer Distanz
+##        sowohl fuer Klassifikation als auch fuer Regression
+## 
+## Input:
+##   features - data.frame mit den Trainingsdaten
+##   y - Vektor mit den wahren Klassenlabeln
+##   k - Parameter von knn
+##   new.data - dataframe mit neuen Beobachtungen
+##
+## Ouput:
+##   Vektor mit den Klassenlabeln fuer die neuen Beobachtungen
+mknn = function(features, y, k, new.data) {
+  
+  ## Rate ob Klassifikation oder Regression
+  classification = is.factor(y)
+  
+  
+  
+  
+  ## Vorhersage
+  if (classification) {
+    ## Entweder den Modalwert bei Klassifikation
+    
+  } else {
+    ## Oder den Mittelwert bei Regression
+    
+  }
+}
+```
+### a)
+Klassifikation
+```{r}
+
+```
+
+### b)
+Regression
+```{r}
+
+```
+
+
+
+## Aufgabe 4
+
+### a)
+### b)
+\begin{itemize}
+  \item[1)]
+  \item[2)]
+  \item[3)]
+  \item[4)]
+  \item[5)]
+  \item[6)]
+\end{itemize}
+
+### c)
