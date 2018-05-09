@@ -18,14 +18,8 @@ knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
 ### a)
 a-priori Wahrscheinlichkeiten:
 ```{r}
-
-p_schmack = pbinom(1, size=4, prob=0.5) ##dbinom gives the density, pbinom gives the distribution function, qbinom gives the quantile function and rbinom generates random deviates.
-p_unschmack = pgeom(3, prob = 0.3)
-
-print(p_schmack)
-print(p_unschmack)
-
-##Kann nicht sein.. da Summe != 1
+aprioriS = 0.25
+aprioriUG = 0.75
 ```
 
 
@@ -39,10 +33,10 @@ rownames(costs) = c("Schmackhaft", "Ungeniessbar")
 
 Werte einfügen
 ```{r}
-costs[1,1] = 40-5-5
-costs[1,2] = -5
-costs[2,1] = -20-5-5
-costs[2,2] = -5
+costs[1,1] = -30
+costs[1,2] = 5
+costs[2,1] = 30
+costs[2,2] = 5
 ```
 
 Ausgabe der Kostenmatrix
@@ -54,12 +48,12 @@ costs
 
 Erwartete Kosten Klasse A:
 ```{r}
-
+cA = aprioriS*costs[1,1] + aprioriS*costs[1,2]
 ```
 
 Erwartete Kosten Klasse B:
 ```{r}
-
+cB = aprioriUG*costs[2,1] + aprioriUG*costs[2,2]
 ```
 
 Enscheidung der datenunabhängigen Regel:
@@ -68,11 +62,18 @@ Enscheidung der datenunabhängigen Regel:
 ### c)
 Formel aus dem Skript in Abhängigkeit der beobachteten Anzahl Streifen $k$:  
 $$
-C_j(k) = 
+C_j(k) = \sum_{i \in \{A,B\}} π_i · c(1,i) · P(k|i)
 $$ 
 Formel mit entsprechenden Verteilungen für jedes $k$ auswerten und Entscheidung treffen:
 
 ```{r}
+C_s = function(k) {
+  (aprioriS*dbinom(x=k, size=4, p=0.5)*costs[1,1] + aprioriUG*geoVerteiling*costs[1,2])
+}
+C_ug = function(k) {
+  (aprioriS*dbinom(x=k, size=4, p=0.5)*costs[2,1] + aprioriUG*geoVerteiling*costs[2,2])
+}
+
 
 ```
 
