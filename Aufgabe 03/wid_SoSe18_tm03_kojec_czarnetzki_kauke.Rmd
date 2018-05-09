@@ -1,7 +1,7 @@
 ---
 title: "Wissensentdeckung in Datenbanken SoSe 2018"
 subtitle: "Übungsblatt 03"
-author: "Sebastian Buschjäger, Malte Jastrow"  # Hier Die Nammen aller Gruppenmitglieder eintragen!
+author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier Die Nammen aller Gruppenmitglieder eintragen!
 output: pdf_document
 ---
 
