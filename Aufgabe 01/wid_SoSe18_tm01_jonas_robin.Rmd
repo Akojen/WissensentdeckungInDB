@@ -1,0 +1,231 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Lösungsvorschlag Übungsblatt 01"
+author: "Jonas Kauke, Robin Czarnetzki"  # Hier Die Nammen aller Gruppenmitglieder eintragen!
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+```
+## Aufgabe 1
+
+### a)
+Stichprobenraum
+$$
+\Omega = \{Kopf, Zahl\}
+$$
+Sigma-Algebren:
+$$
+\begin{aligned}
+\mathfrak{A}_1 = \{ \emptyset, \{Kopf\},  \{Zahl\},\{Kopf, Zahl\} \} \\
+\mathfrak{A}_2 = \{ \emptyset, \Omega\} = \{ \emptyset, \{Kopf, Zahl\} \}
+\end{aligned}
+$$
+Sinnvoller ist die erste, da Omega hier eine abzählbare Menge darstellt.
+
+
+
+### b)
+Wahrscheinlichkeitsfunktion
+$$
+\begin{aligned}
+P(\emptyset) = 0    \\
+P(\{Kopf\}) = 0.5    \\
+P(\{Zahl\}) = 0.5    \\
+P(\Omega) = 1    \\
+\end{aligned}
+$$
+Sei im Folgenden Kopf mit 0 und Zahl mit 1 kodiert.\\
+
+Empirische Verteilungsfunktion
+$$
+\begin{aligned}
+F_X(x) = 
+    \begin{cases}
+      0.5, & \text{falls x=0 }  ,\\
+      1, & \text{falls x=1 } .
+    \end{cases}
+\end{aligned}
+$$
+
+Empirische Dichtefunktion
+$$
+f_X(x) = 
+  \begin{cases}
+      0.5, & \text{falls x=0 }  ,\\
+      0.5, & \text{falls x=1}  ,\\
+      0, & \text{sonst}  .
+  \end{cases}
+$$
+
+### c)
+Erwartungswert
+$$
+\mathrm{E}(X) = \sum_{x\in A} x*f(x) = 0*0.5 + 1*0.5 = 0.5
+$$
+Varianz
+$$
+\mathrm{Var}(X) = \sum_i{(x_i-E(x))^2 * f_x(x_i)} = [(0-0.5)*0.5]+[(1-0.5)*0.5] = 0
+$$
+Die Zufallsvariable ist diskret gleichverteilt, da die Dichtefunktion für alle Elemente des Stichprobenraumes den selben Wert und sonst 0 liefert.
+
+### d)
+Erwartungswert der Summe
+
+$$
+\mathrm{E}(\sum_{i = 1}^n X_i) = n * 0.5
+$$
+Varianz der Summe
+
+$$
+\mathrm{Var}(\sum_{i = 1}^n X_i) = n*0 = 0
+$$
+Die Summe ist somit als als Serie von gleichartigen und unabhängigen Versuchen mit zwei möglichen Ergebnissen binomialverteilt.
+
+## Aufgabe 2
+
+### a)
+```{r}
+i_data = iris[  , 1:4 ]
+
+meanIris <- apply(i_data, 2, mean)
+medianIris <- apply(i_data, 2, median)
+varIris <- apply(i_data, 2, var)
+minIris <- apply(i_data, 2, min)
+maxIris <- apply(i_data, 2, max)
+irisFreq <- table(iris$Species)
+
+
+ux <- unique(iris$Species)
+modal <- ux[which.max(tabulate(match(iris$Species, ux)))]
+
+```
+
+### b)
+```{r}
+ir <- data.frame(iris)
+
+setosa <- ir[which(ir$Species == "setosa"), 1:5]
+virginica <- ir[which(ir$Species == "virginica"), 1:5]
+versicolor <- ir[which(ir$Species == "versicolor"), 1:5]
+
+specs <- list(setosa, virginica, versicolor)
+
+for (s in specs){
+  vals <- s[1:4]
+  meanS <- apply(vals, 2, mean)
+  medianS <- apply(vals, 2, median)
+  varS <- apply(vals, 2, var)
+  minS <- apply(vals, 2, min)
+  maxS <- apply(vals, 2, max)
+}
+
+```
+
+### c)
+```{r}
+
+ir <- data.frame(iris)
+
+setosa <- ir[which(ir$Species == "setosa"), 1:5]
+virginica <- ir[which(ir$Species == "virginica"), 1:5]
+versicolor <- ir[which(ir$Species == "versicolor"), 1:5]
+
+par(mfrow=c(3,1))
+hist(setosa$Petal.Length, main="Petal Length of Setosa")
+hist(versicolor$Petal.Length, main="Petal Length of Versicolor")
+hist(virginica$Petal.Length, main="Petal Length of Virginica")
+
+```
+
+### d)
+```{r}
+
+plot(subset(iris[c(1,2,3,4)]),col=iris$Species)
+
+```
+
+
+## Aufgabe 3
+### a)
+
+
+Simulation
+```{r}
+Geburtstag <- function(Studierende, n = 1000) {
+  sameDay <- 0
+  
+  for (i in 1:n){
+    birSim = data.frame(ID = c(1:Studierende), geb = sample(1:365, Studierende, replace=T))
+    freq <- table(birSim$geb)
+    max <- max(freq)
+    if (max >= 2) sameDay <- sameDay+1
+  }
+  
+  probability <- sameDay/n
+}
+
+set.seed(2018)
+Geburtstag(31)
+```
+
+### b)
+Grafik
+```{r}
+maxPeople <- 100
+birthProbs = data.frame(People = c(1:maxPeople), Probability = c(1:maxPeople))
+for (p in birthProbs$People){
+  birthProbs$Probability[birthProbs$People == p] <- Geburtstag(p)
+}
+plot(birthProbs, main="Random people have the same birthday", xlab="Number of people")
+```
+
+
+
+
+## Aufgabe 4
+### a)
+$$
+\begin{aligned}
+P(||X|| < 1) =&P()  \\
+=&P()  
+\end{aligned}
+$$
+
+### b)
+aus a) folgt:
+$$
+\pi = 
+$$
+mit mit dem angegebenen erwartungstreuen Schätzer ergibt sich daraus:
+$$
+\hat{\pi} =
+$$
+Der Schätzer $\hat{\pi}$ ist erwartungstreu, da:
+$$
+\begin{aligned}
+E(\hat \pi) =&  \\
+=& \\
+=& \pi
+\end{aligned}
+$$
+
+
+
+### c)
+Simulation:
+```{r}
+piHat <- function(n){
+ 
+   
+}
+```
+
+Visualisierung:
+```{r}
+
+```
+
+
+
