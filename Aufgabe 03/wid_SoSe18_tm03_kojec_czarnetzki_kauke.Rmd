@@ -195,25 +195,32 @@ mknn = function(features, y, k, new.data) {
   
   ## Rate ob Klassifikation oder Regression
   classification = is.factor(y)
-  
-  print(new.data)
-  
+  result <- c()
   
   ## Vorhersage
   if (classification) {
     ## Entweder den Modalwert bei Klassifikation
+    
     for (i in 1:nrow(new.data)){
-      for(j in 1:nrow(features[i,])){
-        d <- dist(rbind(features[j,],new.data[i,]))
-        print(d)
-      }
+        d <- dist(rbind(new.data[i,], features))
+        dists <- d[1:nrow(features)]
+        argsorts <- order(dists)
+        modal <- Mode(y[argsorts[1:k]])
+        result <- c(result, as.character(modal))
     }
     
   } else {
     ## Oder den Mittelwert bei Regression
     
   }
+  return(result)
 }
+
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
 ```
 ### a)
 Klassifikation
@@ -221,11 +228,23 @@ Klassifikation
 
 indices <- sample(1:150,120, replace=F)
 train <- iris[indices,1:4]
-target <- iris[indices,5]
-test <- iris[setdiff(c(1:150),indices),1:4]
+traintargets <- iris[indices,5]
 
-mknn(train,target,1,test)
+testindices <-setdiff(c(1:150),indices)
+test <- iris[testindices,1:4]
+testtargets <- iris[testindices,5]
 
+print(iris[indices,1:5])
+print(iris[testindices,1:5])
+classes <- mknn(train, traintargets, 5, test)
+
+print(classes)
+
+correct <- 0
+for (i in 1:length(classes)){
+  if(classes[i] == testtargets[i]) correct <- correct+1
+}
+print(c("Correct:", toString(correct/length(classes))))
 ```
 
 ### b)
