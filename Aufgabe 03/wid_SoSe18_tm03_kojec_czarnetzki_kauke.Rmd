@@ -68,17 +68,20 @@ Formel mit entsprechenden Verteilungen für jedes $k$ auswerten und Entscheidung
 
 ```{r}
 C_s = function(k) {
-  (aprioriS*dbinom(x=k, size=4, p=0.5)*costs[1,1] + aprioriUG*geoVerteiling*costs[1,2])
-}
-C_ug = function(k) {
-  (aprioriS*dbinom(x=k, size=4, p=0.5)*costs[2,1] + aprioriUG*geoVerteiling*costs[2,2])
+  (aprioriS*dbinom(x=k, size=4, p=0.5)*costs[1,1] + aprioriUG*dgeom(x=k,prob=0.3)*costs[2,1])
 }
 
+C_ug = function(k) {
+  (aprioriS*dbinom(x=k, size=4, p=0.5)*costs[1,2] + aprioriUG*dgeom(x=k,prob=0.3)*costs[2,2])
+}
+
+plot(C_s(1:20))
+plot(C_ug(1:20))
 
 ```
 
 
-Die Regel besagt: 
+Die Regel besagt: Alle 4 Fische mit mehr als 4 Streifen werden freigelassen.
 
 
 ### d)
@@ -105,6 +108,18 @@ $$
 $$
 oder direkt in R
 ```{r}
+
+k_un = c()
+k_s = c()
+
+for (i in 1:20){
+    if (C_s(i) < C_ug(i)) k_s <- c(k_s,i)
+    else k_un <- c(k_un, i)
+}
+
+print(k_s)
+print(k_un)
+
 
 ```
 Interpretation:
