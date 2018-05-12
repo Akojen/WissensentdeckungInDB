@@ -211,7 +211,13 @@ mknn = function(features, y, k, new.data) {
     
   } else {
     ## Oder den Mittelwert bei Regression
-    
+    for (i in 1:nrow(new.data)){
+        d <- dist(rbind(new.data[i,], features))
+        dists <- d[1:nrow(features)]
+        argsorts <- order(dists)
+        reg <- mean(y[argsorts[1:k]])
+        result <- c(result, as.numeric(reg))
+    }
   }
   return(result)
 }
@@ -234,23 +240,43 @@ testindices <-setdiff(c(1:150),indices)
 test <- iris[testindices,1:4]
 testtargets <- iris[testindices,5]
 
-print(iris[indices,1:5])
-print(iris[testindices,1:5])
 classes <- mknn(train, traintargets, 5, test)
 
-print(classes)
+fr <- data.frame(testtargets, classes)
+colnames(fr) <- c("Soll-Wert", "Regression")
+
+print(fr)
 
 correct <- 0
 for (i in 1:length(classes)){
   if(classes[i] == testtargets[i]) correct <- correct+1
 }
-print(c("Correct:", toString(correct/length(classes))))
+
+print( c( "Korrekt:", toString(correct/length(classes) )) )
 ```
 
 ### b)
 Regression
 ```{r}
+trainAttr <- c(1,3)
+testAttr <- 2
 
+indices <- sample(1:31,20, replace=F)
+train <- trees[indices, trainAttr]
+traintargets <- trees[indices, testAttr]
+
+testindices <-setdiff(c(1:31), indices)
+test <- trees[testindices, trainAttr]
+testtargets <- trees[testindices, testAttr]
+
+classes <- mknn(train, traintargets, 3, test)
+
+diffs <- abs(classes-testtargets)
+fr <- data.frame( testtargets, classes, diffs )
+colnames(fr) <- c("Soll-Wert", "Regression", "Abweichung")
+
+print(fr)
+print( c("Durchschnittsabweichung: ", toString( mean(diffs)) ))
 ```
 
 
