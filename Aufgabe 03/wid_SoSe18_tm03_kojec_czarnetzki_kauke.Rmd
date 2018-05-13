@@ -10,11 +10,6 @@ knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
 ```
 ## Aufgabe 1
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
-```
-## Aufgabe 1
-
 ### a)
 a-priori Wahrscheinlichkeiten:
 ```{r}
@@ -309,24 +304,20 @@ print( c("Durchschnittsabweichung: ", toString( mean(diffs)) ))
 ```
 
 
-
-## Aufgabe 4
 ## Aufgabe 4
 
 ### a)
 $$
-\text{Zu zeigen:}\\
-\forall B \subseteq C : supp(A \cup B) 	\geq supp(A \cup C) \\
-	\equiv supp(A \cup B) \leq max[supp(A), supp(B)] \geq \\ supp(A \cup C) \leq max[supp(A), supp(C)] \\
+\text{Zu zeigen:} ~\forall B \subseteq C : supp(A \cup B) 	\geq supp(A \cup C) \\
+	\equiv supp(A \cup B) \leq max[supp(A), supp(B)] \geq supp(A \cup C) \leq max[supp(A), supp(C)] \\
 	\equiv max[supp(A), supp(B)] \geq max[supp(A), supp(C)] \\
 	\equiv max[supp(B)] \geq max[supp(C)] \\
-	\equiv supp(B) \geq supp(C) \\
-	\equiv B \subseteq C
-
+	\equiv supp(B) \geq supp(C) ~\forall B \subseteq C
+	
 $$
-### b)
 
 ### b)
+##Itemize funktioniert nicht.
 \begin{itemize}
   \item[1)]
   \item[2)]
@@ -336,15 +327,64 @@ $$
   \item[6)]
 \end{itemize}
 
+### b1)
+$$
+s(A \rightarrow B) \geq s(A \rightarrow \emptyset) \cdot s(B \rightarrow \emptyset)\\ 
+  \equiv \frac{s(A \cup B)}{N} \geq \frac{s(A \cup \emptyset)}{N} \cdot \frac{s(B \cup \emptyset)}{N}\\
+  \equiv \frac{s(A \cup B)}{N} \geq \frac{s(A)}{N} \cdot \frac{s(B)}{N}\\
+  \equiv \frac{s(A \cup B)}{N} \geq \frac{s(A) \cdot s(B)}{N}\\
+  \text{Falsch, da sowohl s(A) als auch s(B) größer/gleich sind als s(A ver. B),} \\
+  \text{daher ist deren Produkt echt größer als s(A} \cup \text{B).}
+$$
+### b2)
+$$
+c(A \rightarrow B) = c(B \rightarrow A) \Rightarrow s(A) = s(B) \\ \equiv \frac{s(A \cup B)}{s(A)} = \frac{s(B \cup A)}{s(B)} \Rightarrow s(A) = s(B)\\ 
+\equiv s(A) = s(B) \Rightarrow s(A) = s(B) \\
+~\text{Richtig, da Vereinigung kommutativ ist und wenn die Zähler gleich sind, sind es auch die Nenner.}
+$$
+### b3)
+$$
+c(A \rightarrow B) \cdot c(B \rightarrow C) = c(A \rightarrow C) \\
+\equiv \frac{s(A \cup B)}{s(A)} \cdot \frac{s(B \cup C)}{s(B)} = \frac{s(A \cup C)}{s(A)} | \cdot s(B) \\
+\equiv \frac{s(A \cup B) \cdot s(B \cup C)}{s(A)} = \frac{s(A \cup C) \cdot s(B)}{s(A)} \\
+  \text{Richtig. Wenn die Nenner gleich sind, sind es auch die Zähler.} \\
+$$
+### b4)
+$$
+c(A \rightarrow B) \geq c(A \rightarrow C) ~\text{mit}~ B \subseteq C \\
+\equiv \frac{s(A \cup  B)}{s(A)} \geq \frac{s(A \cup  C)}{s(A)} ~\text{mit}~ s(B) \geq s(C) \\
+\equiv \frac{max[s(A),s(B)]}{s(A)} \geq \frac{max[s(A),s(C)]}{s(A)} ~\text{mit}~ s(B) \geq s(C) \\
+\text{Richtig aufgrung von}~s(B) \geq s(C).
+$$
+### b5)
+$$
+c(\emptyset \rightarrow A) \cdot c(\emptyset \rightarrow B) \geq c(A \rightarrow B) \\
+\equiv \frac{s(\emptyset \cup  A)}{s(\emptyset)}  \cdot  \frac{s(\emptyset \cup  B)}{s(\emptyset)} \geq \frac{s(A \cup  B)}{s(A)} \\
+\equiv \frac{s(A)}{1}  \cdot \frac{s(B)}{1} \geq \frac{s(A \cup  B)}{s(A)} \\
+\equiv s(A)  \cdot s(B) \geq \frac{s(A \cup  B)}{s(A)} \\
+  \text{Richtig, da dass Produkt der Supports der Teilmegen von A ver. B,} \\     \text{größer/gleich sein muss als der Support ihrer Vereinigung.} \\
+\text{(Unter der Annahme:} ~s(\emptyset)=1)\\
+$$
+### b6)
+$$
+lift(A \rightarrow B) \geq lift(A \rightarrow C) ~\text{mit}~ B \subseteq C \\
+\frac{N \cdot s(A \cap B)}{s(A) \cdot s(B)} \geq \frac{N \cdot s(A \cap C)}{s(A) \cdot s(C)} ~\text{mit}~ s(B) \geq s(C) ~ | \cdot \frac{s(A)}{N}\\
+\frac{s(A \cap B)}{s(B)} \geq \frac{s(A \cap C)}{s(C)} ~\text{mit}~ s(B) \geq s(C)\\
+\text{Richtig unter der Prämisse, dass die Nenner auch gleich sein können.}
+$$
 ### c)
 $$
 \text{1)} \\
-supp(Bier \rightarrow Grillkohle) = \frac{1}{2} \\
-conf(Bier \rightarrow Grillkohle) = \frac{2}{3} \\
-lift(Bier \rightarrow Grillkohle) = \frac{4*?}{\frac{3}{4}*\frac{1}{2}}=? \\
+s(Bier \rightarrow Grillkohle) = \frac{2}{4} = \frac{1}{2} \\
+c(Bier \rightarrow Grillkohle) = \frac{\frac{1}{2}}{\frac{3}{4}} = \frac{4}{6} = \frac{2}{3} \\
+lift(Bier \rightarrow Grillkohle) = \frac{4*1}{\frac{3}{4}*\frac{1}{2}}=\frac{3}{2} \\
+\text{Bier}\rightarrow\text{Grillkohle ist positiv korreliert.} \\
+\text{(Unter der Annahme:} ~s(\emptyset)=1)\\
 
 \text{2)} \\
-supp(Bier,Grillkohle \rightarrow Zahnpaste) = \frac{1}{4} \\
-conf(Bier,Grillkohle \rightarrow Zahnpaste) = \frac{1}{2} \\
-lift(Bier \rightarrow Grillkohle) = \frac{4*?}{\frac{3}{4}*\frac{1}{2}}=? \\
+s(Bier,Grillkohle \rightarrow Zahnpasta) = \frac{1}{4} \\
+c(Bier,Grillkohle \rightarrow Zahnpasta) = \frac{2}{4} = \frac{1}{2} \\
+l(Bier,Grillkohle \rightarrow Zahnpasta) = \frac{4*1}{\frac{1}{2}*\frac{3}{4}}=\frac{3}{2} \\
+\text{Bier, Grillkohle}\rightarrow\text{Zahnpasta ist positiv korreliert.} \\
+\text{(Unter der Annahme:} ~s(\emptyset)=1)\\
 $$
