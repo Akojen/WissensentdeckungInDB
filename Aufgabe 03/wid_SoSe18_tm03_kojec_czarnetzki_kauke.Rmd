@@ -49,20 +49,22 @@ costs
 Erwartete Kosten Klasse A:
 ```{r}
 cA = aprioriS*costs[1,1] + aprioriS*costs[1,2]
+print(cA)
 ```
 
 Erwartete Kosten Klasse B:
 ```{r}
 cB = aprioriUG*costs[2,1] + aprioriUG*costs[2,2]
+print(cB)
 ```
 
 Enscheidung der datenunabhängigen Regel:
-
+Alle Fische werden wieder frei gelassen, weil der Gewinn für die Klasse A geringer ist, als die Kosten für Klasse B. 3/4 der Fische ungenießbar sind und überwiegen damit deutlich.
 
 ### c)
 Formel aus dem Skript in Abhängigkeit der beobachteten Anzahl Streifen $k$:  
 $$
-C_j(k) = \sum_{i \in \{A,B\}} π_i · c(1,i) · P(k|i)
+C_j(k) = \sum_{i \in \{A,B\}} π_i · c(1,i) · P(i|k)
 $$ 
 Formel mit entsprechenden Verteilungen für jedes $k$ auswerten und Entscheidung treffen:
 
@@ -81,60 +83,87 @@ plot(C_ug(1:20))
 ```
 
 
-Die Regel besagt: Alle 4 Fische mit mehr als 4 Streifen werden freigelassen.
+Die Regel besagt: Alle Fische werden freigelassen, außer die mit zwei bzw. drei Streifen.
 
 
 ### d)
-Datenunabhängige Regel:
+Datenunabhängige Regel: Alle Fische werden frei gelassen und damit in die Klasse B eingeordnet.
 Herleitung
 $$
 \begin{aligned}
 & P(\textrm{Fehler}) \\
-= &
+= & π_A\\
+= & 0.25
 \end{aligned}
 $$  
 oder direkt in R
 ```{r}
-
+pFalse = aprioriS
 ```
 
 
 
 
-Datenabhängige Regel:
+Datenabhängige Regel: Alle Fische werden freigelassen, außer die mit zwei bzw. drei Streifen.
 Herleitung
 $$
-
+\begin{aligned}
+P(\textrm{Fehler}) =
+\begin{cases}
+     π_A \cdot P(A|k) & \text{für } k = 1, k \geq 4 \\
+     π_B \cdot P(B|k) & \text{für } 2 \leq k \leq 3 \\
+   \end{cases}
+\end{aligned}
 $$
 oder direkt in R
 ```{r}
+wrongC <- data.frame(Streifenanzahl = c(1:20), Wahrscheinlichkeit = c(1:20))
 
-k_un = c()
-k_s = c()
-
-for (i in 1:20){
-    if (C_s(i) < C_ug(i)) k_s <- c(k_s,i)
-    else k_un <- c(k_un, i)
+P_Wrong_Classification = function(k) {
+  if(k == 2 || k == 3) {
+    return(aprioriS * dbinom(x=k, size=4, p=0.5))
+  } else {
+    return(wrongC$Wahrscheinlichkeit[k] <- aprioriUG*dgeom(x=k,prob=0.3))
+  }
 }
 
-print(k_s)
-print(k_un)
+for (i in 1:20){
+  wrongC$Wahrscheinlichkeit[i] <- P_Wrong_Classification(i)  
+}
 
-
+print(wrongC, row.names = true)
 ```
-Interpretation:
+Interpretation: Wenn ausschließlich die Fische mit zwei bzw. drei Streifen zubereitet werden, sind dabei immer noch ungefähr 15 Prozent der zubereiteten Fische ungenießbar.
 
 ### e)
 Allgemeiner Formel
 $$
-
+\begin{aligned}
+& Verlust_i() \\
+= & π_i \cdot P(i|k) \cdot  cost \text{ für } 2 \leq k \leq 3
+\end{aligned}
 $$
-Datenunabhängige Regel:
+Hinweis: Für die Verlustrechnung wird davon ausgegangen, dass ingesamt 4 Fische gefangen werden. (Ausgehend von der Angabe n = 4 für die Binomialverteilung.) TODO: Brauche ich das überhaupt?
 
+Datenunabhängige Regel: Alle Fische werden frei gelassen und damit in die Klasse B eingeordnet.
+
+Rechnung fuer die Datenunabhängige Regel:
+```{r}
+loss = 0
+
+
+
+print(loss)
+```
+
+Datenabhängige Regel: Alle Fische werden freigelassen, außer die mit zwei bzw. drei Streifen.
 
 Rechnung fuer die Datenabhängige Regel:
 ```{r}
+loss = 0
 
+
+print(loss)
 ```
 
 Interpretation:
