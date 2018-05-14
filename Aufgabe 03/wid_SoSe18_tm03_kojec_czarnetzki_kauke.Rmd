@@ -175,42 +175,63 @@ size = 1000
 
 1. NV-Annahme:
 ```{r}
-quantityS = 0
-quantityUG = 0
-totalS = 0
-totalUG = 0
-
-
-for (i in 1:quantity){
-  if(fishs$type[i] == "tasty") {
-    quantityS = quantityS + 1
-    totalS = totalS + fishs$strips[i]
-  } else {
-    quantityUG = quantityUG + 1
-    totalUG = totalUG + fishs$strips[i]
-  }
-}
+# quantityS = 0
+# quantityUG = 0
+# totalS = 0
+# totalUG = 0
+# 
+# 
+# for (i in 1:size){
+#   if(fishs$type[i] == "tasty") {
+#     quantityS = quantityS + 1
+#     totalS = totalS + fishs$strips[i]
+#   } else {
+#     quantityUG = quantityUG + 1
+#     totalUG = totalUG + fishs$strips[i]
+#   }
+# }
+# 
+# #Arithmetisches Mittel
+# averageS = totalS / quantityS
+# averageUG = totalUG / quantityUG
+# print(averageS)
+# print(averageUG)
+# 
+# varianceS = 0
+# varianceUG = 0
+# 
+# for (i in 1:size){
+#   if(fishs$type[i] == "tasty") {
+#     varianceS = varianceS + (fishs$strips[i] - averageS) * (fishs$strips[i] - averageS)
+#   } else {
+#     varianceUG = varianceUG + (fishs$strips[i] - averageUG) * (fishs$strips[i] - averageUG)
+#   }
+# }
+#   
+# #Standardabweichung
+# deviationS = sqrt((1/(quantityS - 1)) * varianceS)
+# deviationUG = sqrt((1/(quantityUG - 1)) * varianceUG)
+# print(deviationS)
+# print(deviationUG)
+# 
+# #Normalverteilung
+# normalDistributionS = rnorm(n = 1000, mean = averageS, sd = deviationS)
+# normalDistributionUG = rnorm(n = 1000, mean = averageUG, sd = deviationUG)
+# plot(normalDistributionS)
+# plot(normalDistributionUG)
 
 #Arithmetisches Mittel
-averageS = totalS / quantityS
-averageUG = totalUG / quantityUG
+meansNV <- aggregate(.~type, FUN=mean, data=fishs)
+averageS <- meansNV$strips[2]
+averageUG <- meansNV$strips[1]
+
+#Standardabweichung
+sdsNV <- aggregate(.~type, FUN=sd, data=fishs)
+deviationS <- sdsNV$strips[2]
+deviationUG <- sdsNV$strips[1]
+
 print(averageS)
 print(averageUG)
-
-varianceS = 0
-varianceUG = 0
-
-for (i in 1:quantity){
-  if(fishs$type[i] == "tasty") {
-    varianceS = varianceS + (fishs$strips[i] - averageS) * (fishs$strips[i] - averageS)
-  } else {
-    varianceUG = varianceUG + (fishs$strips[i] - averageUG) * (fishs$strips[i] - averageUG)
-  }
-}
-  
-#Standardabweichung
-deviationS = sqrt((1/(quantityS - 1)) * varianceS)
-deviationUG = sqrt((1/(quantityUG - 1)) * varianceUG)
 print(deviationS)
 print(deviationUG)
 
@@ -225,11 +246,23 @@ Problem: NV-Annahme nicht unbedingt gerechtfertigt
 
 2. Alte Verteilungsannahme, Parameter schaetzen:
 ```{r}
-total = length(fishs$strips)
-#dbinom(x=?, size=1000, p=1)
-#dbinom(x=?, size=1000, p=1/total
-#dgeom(x=?, prob=1/(1+total))
+#total = length(fishs$strips)
 
+average <- mean(fishs$strips)
+
+k_max <- max(fishs$strips)
+pBinom <- 1/average
+
+pGeom <- 1/(1 + average)
+
+distr_g = function(k) {
+  dbinom(x=k, size=1000, p=pBinom)
+}
+distr_Ug = function(k) {
+  dgeom(x=k, prob=pGeom)
+}
+plot(distr_Ug(k=1:k_max))
+plot(distr_g(k=1:k_max))
 ```
 Hier fuer k = (2, 3)
 Verteilugnsannahme scheint hier aus der Literatur gerechtfertigt
@@ -237,6 +270,11 @@ Verteilugnsannahme scheint hier aus der Literatur gerechtfertigt
 
 3. Relative Haeufigkeiten aus den Daten:
 ```{r}
+#Count hinzufügen
+fishs$count <- ave(fishs$strips, fishs$strips,  FUN = length)
+
+#Nach Count ordnen:
+fishs[order(-fishs$count), ]
 
 ```
 
