@@ -169,19 +169,66 @@ load("fish.RData")
 
 Neue Vorraussetzungen:
 ```{r}
-
+size = 1000
 ```
 
 
 1. NV-Annahme:
 ```{r}
+quantityS = 0
+quantityUG = 0
+totalS = 0
+totalUG = 0
 
+
+for (i in 1:quantity){
+  if(fishs$type[i] == "tasty") {
+    quantityS = quantityS + 1
+    totalS = totalS + fishs$strips[i]
+  } else {
+    quantityUG = quantityUG + 1
+    totalUG = totalUG + fishs$strips[i]
+  }
+}
+
+#Arithmetisches Mittel
+averageS = totalS / quantityS
+averageUG = totalUG / quantityUG
+print(averageS)
+print(averageUG)
+
+varianceS = 0
+varianceUG = 0
+
+for (i in 1:quantity){
+  if(fishs$type[i] == "tasty") {
+    varianceS = varianceS + (fishs$strips[i] - averageS) * (fishs$strips[i] - averageS)
+  } else {
+    varianceUG = varianceUG + (fishs$strips[i] - averageUG) * (fishs$strips[i] - averageUG)
+  }
+}
+  
+#Standardabweichung
+deviationS = sqrt((1/(quantityS - 1)) * varianceS)
+deviationUG = sqrt((1/(quantityUG - 1)) * varianceUG)
+print(deviationS)
+print(deviationUG)
+
+#Normalverteilung
+normalDistributionS = rnorm(n = 1000, mean = averageS, sd = deviationS)
+normalDistributionUG = rnorm(n = 1000, mean = averageUG, sd = deviationUG)
+plot(normalDistributionS)
+plot(normalDistributionUG)
 ```
 Nur für k = 2 ist ein Fisch schmackhaft
 Problem: NV-Annahme nicht unbedingt gerechtfertigt
 
 2. Alte Verteilungsannahme, Parameter schaetzen:
 ```{r}
+total = length(fishs$strips)
+#dbinom(x=?, size=1000, p=1)
+#dbinom(x=?, size=1000, p=1/total
+#dgeom(x=?, prob=1/(1+total))
 
 ```
 Hier fuer k = (2, 3)
