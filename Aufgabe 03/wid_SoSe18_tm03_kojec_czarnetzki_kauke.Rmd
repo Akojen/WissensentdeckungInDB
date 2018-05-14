@@ -93,7 +93,7 @@ $$
 $$  
 oder direkt in R
 ```{r}
-pFalse = aprioriS
+pFalseDU = aprioriS
 ```
 
 
@@ -126,7 +126,9 @@ for (i in 1:20){
   wrongC$Wahrscheinlichkeit[i] <- P_Wrong_Classification(i)  
 }
 
-print(wrongC, row.names = true)
+print(wrongC, row.names = TRUE)
+
+pFalseDA <- wrongC$Wahrscheinlichkeit[2] + wrongC$Wahrscheinlichkeit[3]
 ```
 Interpretation: Wenn ausschließlich die Fische mit zwei bzw. drei Streifen zubereitet werden, sind dabei immer noch ungefähr 15 Prozent der zubereiteten Fische ungenießbar.
 
@@ -144,24 +146,21 @@ Datenunabhängige Regel: Alle Fische werden frei gelassen und damit in die Klass
 
 Rechnung fuer die Datenunabhängige Regel:
 ```{r}
-loss = 0
-
-
-
-print(loss)
+lossDU = pFalseDU * costs[1,2]
+## Auch wenn wir alle Fische wieder freilassen, so lassen wir in 25% der Fälle schmackhafte Fische frei und tragen somit die erwarteten Angelkosten der Fehlentscheidung.
+print(lossDU)
 ```
 
 Datenabhängige Regel: Alle Fische werden freigelassen, außer die mit zwei bzw. drei Streifen.
 
 Rechnung fuer die Datenabhängige Regel:
 ```{r}
-loss = 0
-
-
-print(loss)
+lossDA = pFalseDA * costs[2,1]
+##Trotzdessen, dass wir nun Fische nach der Anzahl der Streifen selektieren, liegen wir in ca. 15% der Fälle immer noch falsch, sodass der erwartete Verlust immer noch ca. 4,7 Euro beträgt.
+print(lossDA)
 ```
 
-Interpretation:
+Interpretation: Das Ergebnis überrascht, weil die apriori Annahmen über die Fischpopulation eine bessere Entscheidungsgrundlage liefern als die Information aus der Fischliteratur.
 
 ## Aufgabe 2
 ```{r}
