@@ -1,0 +1,164 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Übungsblatt 04"
+author: "Sebastian Buschjäger, Malte Jastrow"  # Hier die Namen aller Gruppenmitglieder eintragen!
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+library(mlr)
+library(mlbench)
+library(MASS)
+library(klaR)        # die Pakete muessen gegebenenfalls installiert werden!
+```
+## Aufgabe 1
+
+### a)
+```{r}
+data(Ionosphere)
+set.seed(1273)
+
+##a
+
+#Split data 80% train / 20% test: https://stackoverflow.com/questions/17200114/how-to-split-data-into-training-testing-sets-using-sample-function/31634462#31634462
+
+sample <- sample.int(n = nrow(Ionosphere), size = floor(.8*nrow(Ionosphere)), replace = F)
+train <- Ionosphere[sample, ]
+test  <- Ionosphere[-sample, ]
+
+task = makeClassifTask(data = train, target = "Class")
+
+##b
+learner = makeLearner("classif.naiveBayes")
+model = train(learner, task)
+
+##c
+prediction = as.data.frame(predict(model, newdata = test))
+
+prediction_eval <- function (pred) {
+  n <- nrow(pred)
+  goodness <- 0
+  for (i in 1:n) {
+    if (pred[i,1] == pred[i,2]) {
+      goodness <- goodness + 1
+    }
+  }
+  return(goodness / n)
+}
+
+prediction_eval(prediction)
+print("Mit fast 86% trifft die vorhergesagte Klasse mit der wahren Klasse überein. Daher ist das Ergebniss gut.")
+
+```
+
+### b)
+```{r}
+
+
+```
+
+### c)
+```{r}
+
+```
+
+## Aufgabe 2
+
+### a)
+```{r}
+train.mylda <- function(data, target) {
+
+
+
+}
+```
+
+
+### b)
+```{r}
+predict.mylda <- function(model, newdata) {
+
+  
+
+}
+```
+
+### c)
+
+80/20 Aufteilungen des Iris-Datensatzes
+```{r}
+set.seed(201805)
+
+samples = sample(1:150, 90)
+
+train = iris[samples,]
+test = iris[-samples,]
+
+```
+
+
+Modell, Vorhersage und Fehlerrate
+```{r}
+
+
+```
+
+
+## Aufgabe 3
+### a)
+```{r}
+
+
+```
+
+Interpretation:
+
+### b)
+```{r}
+
+
+```
+
+
+
+### c)
+```{r}
+
+
+```
+
+Anwedung der RDA mit optimalen Parametern
+```{r}
+
+
+```
+
+
+
+Interpretation:
+
+
+
+
+## Aufgabe 4
+### a)
+Learner anlegen
+```{r}
+
+```
+
+Tasks anlegen
+```{r}
+
+```
+
+Grafiken erzeugen
+```{r, fig.pos = "p", fig.height = 4}
+
+
+```
+
+### b)
+
+
