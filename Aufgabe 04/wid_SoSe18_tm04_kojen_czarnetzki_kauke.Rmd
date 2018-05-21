@@ -29,14 +29,20 @@ test  <- Ionosphere[-sample, ]
 
 task = makeClassifTask(data = train, target = "Class")
 
-##b
+```
+
+### b)
+```{r}
 learner = makeLearner("classif.naiveBayes")
 model = train(learner, task)
 
-##c
+```
+
+### c)
+```{r}
 prediction = as.data.frame(predict(model, newdata = test))
 
-prediction_eval <- function (pred) {
+prediction_eval <- function (pred, outcome) {
   n <- nrow(pred)
   goodness <- 0
   for (i in 1:n) {
@@ -44,30 +50,31 @@ prediction_eval <- function (pred) {
       goodness <- goodness + 1
     }
   }
-  return(goodness / n)
+  if (outcome == "succ") {
+    return(goodness / n)  
+  }
+  else if (outcome == "err")
+    return((n - goodness) / n)
+  else
+    return("Does not compute.")
 }
 
-prediction_eval(prediction)
-print("Mit fast 86% trifft die vorhergesagte Klasse mit der wahren Klasse überein. Daher ist das Ergebniss gut.")
-
+prediction_eval(prediction, "succ")
+#Alternative Ausgabe ueber (mit Daten der Klasse Prediction, mmce: mean misclassification error / acc: accuracy):
+performance(predict(model, newdata = test), measures = list(mmce, acc))
 ```
 
-### b)
-```{r}
-
-
-```
-
-### c)
-```{r}
-
-```
+Interpretation:
+Mit fast 86% trifft die vorhergesagte Klasse mit der wahren Klasse überein. Daher ist das Ergebniss zufriedenstellend.
 
 ## Aufgabe 2
 
 ### a)
 ```{r}
+# https://www.rdocumentation.org/packages/caret/versions/6.0-78/source
+
 train.mylda <- function(data, target) {
+  
 
 
 
@@ -78,7 +85,7 @@ train.mylda <- function(data, target) {
 ### b)
 ```{r}
 predict.mylda <- function(model, newdata) {
-
+# https://www.rdocumentation.org/packages/MASS/versions/7.3-50/source
   
 
 }
@@ -95,6 +102,8 @@ samples = sample(1:150, 90)
 train = iris[samples,]
 test = iris[-samples,]
 
+#Keine 80 / 20 Aufteilung sondern eine 60 / 40 - wtf?
+
 ```
 
 
@@ -108,7 +117,15 @@ Modell, Vorhersage und Fehlerrate
 ## Aufgabe 3
 ### a)
 ```{r}
+task = makeClassifTask(data = train, target = "Species")
+learner = makeLearner("classif.lda")
+model = train(learner, task)
 
+prediction = as.data.frame(predict(model, newdata = test))
+prediction_eval(prediction, "err")
+
+## To do
+# Vergleichen Sie die Fehlklassifikationsrate mit Ihrer eigenen Implementierung. Hätte man sich diesen Vergleich sparen können?
 
 ```
 
@@ -116,21 +133,58 @@ Interpretation:
 
 ### b)
 ```{r}
+task = makeClassifTask(data = train, target = "Species")
+learner = makeLearner("classif.qda")
+model = train(learner, task)
 
+prediction = as.data.frame(predict(model, newdata = test))
+prediction_eval(prediction, "err")
 
 ```
-
+Interpretation:
+Die Fehlklassifikationsrate hat sich halbiert. Nur in einem von 60 Fällen entspricht die Vorhersage nicht der Wahrheit.
 
 
 ### c)
 ```{r}
+task = makeClassifTask(data = train, target = "Species")
 
+rda_param_eval <- function (gam, lam) {
+  if (length(gam) != length(lam)) {
+    return("Vectors of lamda and gamma params need to be equally long")
+  }
+  results = matrix(0, nrow = 36, ncol = 3)
+  colnames(results) = c("Gamma", "Lambda", "Fehlklassifikationsrate")
+  n <- length(gam)
+  tabIndx <- 0
+  for (i in 1:n) {
+    for (j in 1:n) {
+      tabIndx <- tabIndx + 1
+      learner = makeLearner("classif.rda", crossval = FALSE, gamma = gam[i], lambda = lam[j])
+      model <- train(learner, task)
+      pred <- predict(model, newdata = test)
+      results[tabIndx,1] <- gam[i]
+      results[tabIndx,2] <- lam[j]
+      results[tabIndx,3] <- performance(pred, measures = mmce)
+    }
+  }
+  #results[order("Fehlklassifikationsrate"),] #Klappt nicht..
+  return(results)
+}
 
+gamma <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
+lambda <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
+rda_param_eval(gamma, lambda)
 ```
 
 Anwedung der RDA mit optimalen Parametern
 ```{r}
+task = makeClassifTask(data = train, target = "Species")
+learner = makeLearner("classif.rda", crossval = FALSE, gamma = 0, lambda = 0)
+model = train(learner, task)
 
+prediction = as.data.frame(predict(model, newdata = test))
+prediction_eval(prediction, "err")
 
 ```
 
@@ -138,7 +192,8 @@ Anwedung der RDA mit optimalen Parametern
 
 Interpretation:
 
-
+Die RDA erreicht die geringste Fehlklassifikationsrate von 1,6% für mehere Parameterkombinationen, u.A. auch fuer Lambda = 0, Gamma = 0.
+Dieses Ergebnis wird auch von der QDA erreicht. Daher lohnt sich der Aufwand fuer RDA nicht.
 
 
 ## Aufgabe 4
