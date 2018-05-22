@@ -200,17 +200,47 @@ Dieses Ergebnis wird auch von der QDA erreicht. Daher lohnt sich der Aufwand fue
 ### a)
 Learner anlegen
 ```{r}
+learnerNBay = makeLearner("classif.naiveBayes")
+learnerLDA = makeLearner("classif.lda")
+learnerQDA = makeLearner("classif.qda")
+learnerRDA = makeLearner("classif.rda", crossval = FALSE, gamma = 0, lambda = 0)
+#To do:  Setzen Sie moegliche Parameter der Verfahren sinnvoll. Ggf. durch rda_param_eval laufen lassen? Sonst qda = rda
 
+learnerList <- list(learnerNBay, learnerLDA, learnerQDA, learnerRDA)
 ```
 
 Tasks anlegen
 ```{r}
+# ftp://cran.r-project.org/pub/R/web/packages/mlbench/mlbench.pdf
+data2dnormals <- as.data.frame(mlbench.2dnormals(500,2))
+dataSmiley <- as.data.frame(mlbench.smiley(500, 0.1, 0.05))
+dataCassini <- as.data.frame(mlbench.cassini(5000))
+
+task2dnormals = makeClassifTask(data = data2dnormals, target = "classes")
+taskSmiley = makeClassifTask(data = dataSmiley, target = "classes")
+taskCassini = makeClassifTask(data = dataCassini, target = "classes")
+
+taskList <- list(task2dnormals, taskSmiley, taskCassini)
 
 ```
 
 Grafiken erzeugen
 ```{r, fig.pos = "p", fig.height = 4}
 
+plotLearnerPrediction(learner = learnerNBay, task = task2dnormals)
+plotLearnerPrediction(learner = learnerLDA, task = task2dnormals)
+plotLearnerPrediction(learner = learnerQDA, task = task2dnormals)
+plotLearnerPrediction(learner = learnerRDA, task = task2dnormals)
+
+plotLearnerPrediction(learner = learnerNBay, task = taskSmiley)
+plotLearnerPrediction(learner = learnerLDA, task = taskSmiley)
+plotLearnerPrediction(learner = learnerQDA, task = taskSmiley)
+plotLearnerPrediction(learner = learnerRDA, task = taskSmiley)
+
+plotLearnerPrediction(learner = learnerNBay, task = taskCassini)
+plotLearnerPrediction(learner = learnerLDA, task = taskCassini)
+plotLearnerPrediction(learner = learnerQDA, task = taskCassini)
+plotLearnerPrediction(learner = learnerRDA, task = taskCassini)
 
 ```
 
