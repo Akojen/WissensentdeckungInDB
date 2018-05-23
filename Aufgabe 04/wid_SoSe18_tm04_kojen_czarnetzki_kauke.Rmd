@@ -1,7 +1,7 @@
 ---
 title: "Wissensentdeckung in Datenbanken SoSe 2018"
 subtitle: "Übungsblatt 04"
-author: "Sebastian Buschjäger, Malte Jastrow"  # Hier die Namen aller Gruppenmitglieder eintragen!
+author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier die Namen aller Gruppenmitglieder eintragen!
 output: pdf_document
 ---
 
@@ -74,11 +74,28 @@ Mit fast 86% trifft die vorhergesagte Klasse mit der wahren Klasse überein. Dah
 # https://www.rdocumentation.org/packages/caret/versions/6.0-78/source
 
 train.mylda <- function(data, target) {
+  classes <- unique(data$target)
+  print(class(target))
+  print(classes)
+  targetIndex <- grep(target, colnames(data))
+  cleanData <- data[,-targetIndex] #Ohne die Target-Spalte
+  p <- ncol(cleanData) #Abzueglaich der Target-Spalte
+  n <- c()
+  meanVec <- c()
+  for (i in 1: length(classes)) {
+    classSpecificData <- data[data[,targetIndex] == toString(classes[i]),]
+    #n <- c(n,nrow(classSpecificData))
+    #meanVec <- c(meanVec, mean(classSpecificData))
+    print(classSpecificData)
+  }
+  coVar <- 1
   
+  #print(c(n, meanVec))
 
 
 
 }
+train.mylda(iris, "Species")
 ```
 
 
