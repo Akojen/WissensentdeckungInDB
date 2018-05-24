@@ -74,26 +74,41 @@ Mit fast 86% trifft die vorhergesagte Klasse mit der wahren Klasse überein. Dah
 # https://www.rdocumentation.org/packages/caret/versions/6.0-78/source
 
 train.mylda <- function(data, target) {
-  classes <- unique(data$target)
-  print(class(target))
-  print(classes)
   targetIndex <- grep(target, colnames(data))
+  
+  classes <- unique(data[, targetIndex])
   cleanData <- data[,-targetIndex] #Ohne die Target-Spalte
   p <- ncol(cleanData) #Abzueglaich der Target-Spalte
   n <- c()
-  meanVec <- c()
+  meanList <- c()
+  
+  matSum <- matrix(0, ncol=p, nrow=p)
+  realCovSum <- matrix(0, ncol=p, nrow=p)
+    
   for (i in 1: length(classes)) {
     classSpecificData <- data[data[,targetIndex] == toString(classes[i]),]
-    #n <- c(n,nrow(classSpecificData))
-    #meanVec <- c(meanVec, mean(classSpecificData))
-    print(classSpecificData)
-  }
-  coVar <- 1
+    cleanClassSpecificData <- classSpecificData[, -targetIndex]
+    n <- c(n,nrow(cleanClassSpecificData))
+    meanVec <- apply(cleanClassSpecificData, 2, mean)
+    meanList <- c(meanList, meanVec)
   
-  #print(c(n, meanVec))
-
-
-
+    for (j in 1:n[i]){
+      mat <- as.matrix(cleanClassSpecificData[j,] - meanVec)
+      matGes <- t(mat) %*% mat
+      matSum <- matSum+matGes
+    }
+    realCovSum <- realCovSum+cov(cleanClassSpecificData)
+  }
+  
+  meanMat <- matrix(meanList, ncol=p)
+  meanFrame <- data.frame(meanMat, classes)
+  colnames(meanFrame) <- colnames(data)
+  
+  firstPartCov <- (1/ (sum(n)-length(classes)))
+  covMat <- firstPartCov*matSum
+  print(covMat)
+  print(realCovSum) # zum vergleich mit cov berechnet, kann wieder raus
+  print(abs(covMat-realCovSum)) # differenz zu R cov
 }
 train.mylda(iris, "Species")
 ```
