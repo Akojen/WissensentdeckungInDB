@@ -83,7 +83,6 @@ train.mylda <- function(data, target) {
   meanList <- c()
   
   matSum <- matrix(0, ncol=p, nrow=p)
-  realCovSum <- matrix(0, ncol=p, nrow=p)
     
   for (i in 1: length(classes)) {
     classSpecificData <- data[data[,targetIndex] == toString(classes[i]),]
@@ -97,7 +96,6 @@ train.mylda <- function(data, target) {
       matGes <- t(mat) %*% mat
       matSum <- matSum+matGes
     }
-    realCovSum <- realCovSum+cov(cleanClassSpecificData)
   }
   
   meanMat <- matrix(meanList, ncol=p)
@@ -106,20 +104,29 @@ train.mylda <- function(data, target) {
   
   firstPartCov <- (1/ (sum(n)-length(classes)))
   covMat <- firstPartCov*matSum
-  print(covMat)
-  print(realCovSum) # zum vergleich mit cov berechnet, kann wieder raus
-  print(abs(covMat-realCovSum)) # differenz zu R cov
+  
+  return( list("cov"=covMat, "means"=meanFrame, "apriori"=n/sum(n)) )
 }
-train.mylda(iris, "Species")
+
 ```
 
 
 ### b)
 ```{r}
 predict.mylda <- function(model, newdata) {
-# https://www.rdocumentation.org/packages/MASS/versions/7.3-50/source
-  
-
+  #for (i in 1:nrow(newdata)){
+  for (i in 1:1){
+    invCov <- solve(model$cov)
+    for (j in 1:nrow(model$means)){
+      classSpecificMeanVector <- as.numeric(model$means[j,-(ncol(model$means))])
+      
+      first <- t(invCov*classSpecificMeanVector)*as.numeric(newdata[j,])
+      second <- 0.5*classSpecificMeanVector*invCov*classSpecificMeanVector # zwei mal ohne transformation?
+      third <- log( model$apriori[j] , base = exp(1))
+      ges <- first-second+third
+      print(ges)
+    }    
+  }
 }
 ```
 
@@ -129,12 +136,10 @@ predict.mylda <- function(model, newdata) {
 ```{r}
 set.seed(201805)
 
-samples = sample(1:150, 90)
+samples = sample(1:150, 120) # 80/20 Aufteilung, statt 60/40
 
 train = iris[samples,]
 test = iris[-samples,]
-
-#Keine 80 / 20 Aufteilung sondern eine 60 / 40 - wtf?
 
 ```
 
@@ -142,6 +147,11 @@ test = iris[-samples,]
 Modell, Vorhersage und Fehlerrate
 ```{r}
 
+model <- train.mylda(train, "Species")
+prediction <- predict.mylda(model, test[,1:4])
+
+#print(model)
+#print(prediction)
 
 ```
 
