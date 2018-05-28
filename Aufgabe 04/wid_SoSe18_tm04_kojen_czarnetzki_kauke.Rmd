@@ -67,27 +67,25 @@ train.mylda <- function(data, target) {
   for (i in 1: length(classes)) {
     classSpecificData <- data[data[,targetIndex] == toString(classes[i]),] #z.B. nur Daten zur Klasse "good"
     cleanClassSpecificData <- classSpecificData[, -targetIndex]
-    n <- nrow(cleanClassSpecificData) ###Anzahl der p-dimensionalen Beobachtungen. Muss kein Vektor sein, oder? 
+    n <- c(n, nrow(cleanClassSpecificData)) ###Anzahl der p-dimensionalen Beobachtungen. Muss kein Vektor sein, oder? Doch!
     meanVec <- apply(cleanClassSpecificData, 2, mean) #Parameter 2: spaltenweise
     meanList <- c(meanList, meanVec)
   
-    for (j in 1:n){ #Pro Beoabchtung wird summiert nach Formel (13), s. 143
+    for (j in 1:nrow(cleanClassSpecificData)){ #Pro Beoabchtung wird summiert nach Formel (13), s. 143
       mat <- as.matrix(cleanClassSpecificData[j,] - meanVec)
       matGes <- t(mat) %*% mat
       matSum <- matSum+matGes
     }
   }
   
-  n <- nrow(cleanData) ###Hier müsste man aus meiner Sicht wieder die Gesamtanzahl der Beobachtungen nehmen
-  
   meanMat <- matrix(meanList, ncol=p)
   meanFrame <- data.frame(meanMat, classes)
   colnames(meanFrame) <- colnames(data)
   
-  firstPartCov <- (1/ (n-length(classes)))
+  firstPartCov <- (1 / (sum(n)-length(classes)))
   covMat <- firstPartCov*matSum
   
-  return( list("cov"=covMat, "means"=meanFrame, "apriori"=1 / length(classes)) ) ###Apriori-Wahrscheinlichkeit einer der Klassen zugeordnet zu sein.
+  return( list("cov"=covMat, "means"=meanFrame, "apriori"= n/sum(n)) ) ###Apriori-Wahrscheinlichkeit einer der Klassen zugeordnet zu sein.
 }
 
 ```
@@ -98,22 +96,23 @@ train.mylda <- function(data, target) {
 predict.mylda <- function(model, newdata) {
   cleanNewdata <- newdata[ , unlist(lapply(newdata, is.numeric))] #Nicht numerische (=Klassen)Spalte entfernen https://stackoverflow.com/a/5863165
   invCov <- solve(model$cov)
-  
   predResult <- data.frame(matrix(ncol = 2, nrow = nrow(newdata)))
   colnames(predResult) <- c("truth", "response")
+  
   for (i in 1:nrow(cleanNewdata)){ #Für jede Test-Beobachtung
-    predResult[i,1] <- toString(newdata[i, 5]) #(Wahre Klasse wird schon im Voraus eingetragen) - To do: non-numeric Index dynamisch bestimmen
+    predResult[i,1] <- toString(newdata[i, ncol(model$means)]) #(Wahre Klasse wird schon im Voraus eingetragen)
     maxH <- -Inf
     for (j in 1:nrow(model$means)){ #Und jede Klasse soll Formel (6), s. 130 berechnet werden
       classSpecificMeanVector <- as.numeric(model$means[j,-(ncol(model$means))])
-      first <- t(invCov %*% classSpecificMeanVector) %*% as.numeric(cleanNewdata[j,])
-      second <- 0.5*classSpecificMeanVector %*% invCov %*% classSpecificMeanVector
-      third <- log( model$apriori , base = exp(1))
+      first <- t(invCov * classSpecificMeanVector) * as.numeric(cleanNewdata[i,])
+      second <- 0.5 * classSpecificMeanVector * invCov * classSpecificMeanVector
+      third <- log( model$apriori[j] , base = exp(1))
       ges <- first-second+third
-      sum(ges)
-      if (sum(ges) >= maxH) {
-        predResult[i,2] <- toString(model$means[j,5]) #(Vorhergesate Klasse wird ergänzt) 
-        maxH <- sum(ges)
+      sumGes <- sum(ges)
+      
+      if (sumGes >= maxH) {
+        predResult[i,2] <- toString(model$means[j, ncol(model$means)]) #(Vorhergesate Klasse wird ergänzt) 
+        maxH <- sumGes
       }
     }
   }
@@ -221,14 +220,14 @@ rda_param_eval <- function (gam, lam) {
       results[tabIndx,3] <- performance(pred, measures = mmce)
     }
   }
-  #results[order("Fehlklassifikationsrate"),] #Klappt nicht..
+  results <- as.data.frame(results)
+  results <- results[order(-results$Fehlklassifikationsrate),] # sortieren desc
   return(results)
 }
 
 gamma <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
 lambda <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
-param_results <- as.data.frame(rda_param_eval(gamma, lambda))
-param_results <- as.matrix(param_results[order(-param_results$Fehlklassifikationsrate),])
+param_results <- rda_param_eval(gamma, lambda)
 print(param_results)
 ```
 
