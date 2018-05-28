@@ -228,8 +228,8 @@ rda_param_eval <- function (gam, lam) {
 gamma <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
 lambda <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
 param_results <- as.data.frame(rda_param_eval(gamma, lambda))
+param_results <- as.matrix(param_results[order(-param_results$Fehlklassifikationsrate),])
 print(param_results)
-print(as.matrix(param_results[order(param_results$Fehlklassifikationsrate),]))
 ```
 
 Anwedung der RDA mit optimalen Parametern
