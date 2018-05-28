@@ -127,7 +127,7 @@ predict.mylda <- function(model, newdata) {
 ```{r}
 set.seed(201805)
 
-samples = sample(1:150, 120) # 80/20 Aufteilung, statt 60/40
+samples = sample(1:150, 90) # 80/20 Aufteilung, statt 60/40
 
 train = iris[samples,]
 test = iris[-samples,]
@@ -173,8 +173,8 @@ task = makeClassifTask(data = train, target = "Species")
 learner = makeLearner("classif.lda")
 model = train(learner, task)
 
-prediction = as.data.frame(predict(model, newdata = test))
-performance(predict(model, newdata = test), measures = list(mmce, acc))
+prediction = predict(model, newdata = test)
+performance(prediction, measures = list(mmce, acc))
 
 ##To do:
 # Vergleichen Sie die Fehlklassifikationsrate mit Ihrer eigenen Implementierung. Hätte man sich diesen Vergleich sparen können?
@@ -227,7 +227,9 @@ rda_param_eval <- function (gam, lam) {
 
 gamma <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
 lambda <- c(0, 0.2, 0.4, 0.6, 0.8, 1)
-rda_param_eval(gamma, lambda)
+param_results <- as.data.frame(rda_param_eval(gamma, lambda))
+print(param_results)
+print(as.matrix(param_results[order(param_results$Fehlklassifikationsrate),]))
 ```
 
 Anwedung der RDA mit optimalen Parametern
