@@ -40,27 +40,8 @@ model = train(learner, task)
 ```{r}
 prediction = as.data.frame(predict(model, newdata = test))
 
-prediction_eval <- function (pred, outcome) {
-  n <- nrow(pred)
-  goodness <- 0
-  for (i in 1:n) {
-    if (pred[i,1] == pred[i,2]) {
-      goodness <- goodness + 1
-    }
-  }
-  if (outcome == "succ") {
-    return(goodness / n)  
-  }
-  else if (outcome == "err")
-    return((n - goodness) / n)
-  else
-    return("Does not compute.")
-}
-
-prediction_eval(prediction, "succ")
-#Alternative Ausgabe ueber (mit Daten der Klasse Prediction, mmce: mean misclassification error / acc: accuracy):
+#Ausgabe ueber performance Funktion (mit Daten der Klasse Prediction, mmce: mean misclassification error / acc: accuracy):
 performance(predict(model, newdata = test), measures = list(mmce, acc))
-
 ```
 
 Interpretation:
@@ -160,12 +141,27 @@ Modell, Vorhersage und Fehlerrate
 model <- train.mylda(train, "Species")
 prediction <- predict.mylda(model, test)
 
+prediction_eval <- function (pred) {
+  n <- nrow(pred)
+  goodness <- 0
+  predEval <- data.frame(matrix(ncol = 2, nrow = 1))
+  colnames(predEval) <- c("mmce", "acc")
+  for (i in 1:n) {
+    if (pred[i,1] == pred[i,2]) {
+      goodness <- goodness + 1
+    }
+  }
+  predEval[1,1] <- (n - goodness) / n
+  predEval[1,2] <- goodness / n
+  return(predEval)
+}
+
 print(model)
 print(prediction)
 print("Accuracy:")
-prediction_eval(prediction, "succ")
-print("Mean misclassification error (Fehlerklassifikationsrate):")
-prediction_eval(prediction, "err")
+eval <- prediction_eval(prediction)
+eval
+paste(c("Mean misclassification error (Fehlerklassifikationsrate): ", round(eval[1,2]*100,digits= 2), "%"), collapse = "")
 
 ```
 
@@ -178,7 +174,7 @@ learner = makeLearner("classif.lda")
 model = train(learner, task)
 
 prediction = as.data.frame(predict(model, newdata = test))
-prediction_eval(prediction, "err")
+performance(predict(model, newdata = test), measures = list(mmce, acc))
 
 ##To do:
 # Vergleichen Sie die Fehlklassifikationsrate mit Ihrer eigenen Implementierung. Hätte man sich diesen Vergleich sparen können?
@@ -195,7 +191,7 @@ learner = makeLearner("classif.qda")
 model = train(learner, task)
 
 prediction = as.data.frame(predict(model, newdata = test))
-prediction_eval(prediction, "err")
+performance(predict(model, newdata = test), measures = list(mmce, acc))
 
 ```
 Interpretation:
@@ -241,7 +237,7 @@ learner = makeLearner("classif.rda", crossval = FALSE, gamma = 0, lambda = 0)
 model = train(learner, task)
 
 prediction = as.data.frame(predict(model, newdata = test))
-prediction_eval(prediction, "err")
+performance(predict(model, newdata = test), measures = list(mmce, acc))
 
 ```
 
@@ -303,4 +299,5 @@ plotLearnerPrediction(learner = learnerRDA, task = taskCassini)
 
 ### b)
 
+#To do
 
