@@ -19,8 +19,6 @@ library(klaR)        # die Pakete muessen gegebenenfalls installiert werden!
 data(Ionosphere)
 set.seed(1273)
 
-##a
-
 #Split data 80% train / 20% test: https://stackoverflow.com/questions/17200114/how-to-split-data-into-training-testing-sets-using-sample-function/31634462#31634462
 
 sample <- sample.int(n = nrow(Ionosphere), size = floor(.8*nrow(Ionosphere)), replace = F)
@@ -62,6 +60,7 @@ prediction_eval <- function (pred, outcome) {
 prediction_eval(prediction, "succ")
 #Alternative Ausgabe ueber (mit Daten der Klasse Prediction, mmce: mean misclassification error / acc: accuracy):
 performance(predict(model, newdata = test), measures = list(mmce, acc))
+
 ```
 
 Interpretation:
@@ -74,38 +73,40 @@ Mit fast 86% trifft die vorhergesagte Klasse mit der wahren Klasse überein. Dah
 # https://www.rdocumentation.org/packages/caret/versions/6.0-78/source
 
 train.mylda <- function(data, target) {
-  targetIndex <- grep(target, colnames(data))
+  targetIndex <- grep(target, colnames(data)) #Index der Klassen-Spalte
   
-  classes <- unique(data[, targetIndex])
-  cleanData <- data[,-targetIndex] #Ohne die Target-Spalte
-  p <- ncol(cleanData) #Abzueglaich der Target-Spalte
+  classes <- unique(data[, targetIndex]) #z.B. {"good", "bad"} für Ionosphere
+  cleanData <- data[,-targetIndex] #Daten ohne die Target-Spalte
+  p <- ncol(cleanData) #Anzahl der Spalten abzueglich der Target-Spalte = Anzahl der Dimensionen. 
   n <- c()
   meanList <- c()
   
   matSum <- matrix(0, ncol=p, nrow=p)
     
   for (i in 1: length(classes)) {
-    classSpecificData <- data[data[,targetIndex] == toString(classes[i]),]
+    classSpecificData <- data[data[,targetIndex] == toString(classes[i]),] #z.B. nur Daten zur Klasse "good"
     cleanClassSpecificData <- classSpecificData[, -targetIndex]
-    n <- c(n,nrow(cleanClassSpecificData))
-    meanVec <- apply(cleanClassSpecificData, 2, mean)
+    n <- nrow(cleanClassSpecificData) ###Anzahl der p-dimensionalen Beobachtungen. Muss kein Vektor sein, oder? 
+    meanVec <- apply(cleanClassSpecificData, 2, mean) #Parameter 2: spaltenweise
     meanList <- c(meanList, meanVec)
   
-    for (j in 1:n[i]){
+    for (j in 1:n){ #Pro Beoabchtung wird summiert nach Formel (13), s. 143
       mat <- as.matrix(cleanClassSpecificData[j,] - meanVec)
       matGes <- t(mat) %*% mat
       matSum <- matSum+matGes
     }
   }
   
+  n <- nrow(cleanData) ###Hier müsste man aus meiner Sicht wieder die Gesamtanzahl der Beobachtungen nehmen
+  
   meanMat <- matrix(meanList, ncol=p)
   meanFrame <- data.frame(meanMat, classes)
   colnames(meanFrame) <- colnames(data)
   
-  firstPartCov <- (1/ (sum(n)-length(classes)))
+  firstPartCov <- (1/ (n-length(classes)))
   covMat <- firstPartCov*matSum
   
-  return( list("cov"=covMat, "means"=meanFrame, "apriori"=n/sum(n)) )
+  return( list("cov"=covMat, "means"=meanFrame, "apriori"=1 / length(classes)) ) ###Apriori-Wahrscheinlichkeit einer der Klassen zugeordnet zu sein.
 }
 
 ```
@@ -114,19 +115,28 @@ train.mylda <- function(data, target) {
 ### b)
 ```{r}
 predict.mylda <- function(model, newdata) {
-  #for (i in 1:nrow(newdata)){
-  for (i in 1:1){
-    invCov <- solve(model$cov)
-    for (j in 1:nrow(model$means)){
+  cleanNewdata <- newdata[ , unlist(lapply(newdata, is.numeric))] #Nicht numerische (=Klassen)Spalte entfernen https://stackoverflow.com/a/5863165
+  invCov <- solve(model$cov)
+  
+  predResult <- data.frame(matrix(ncol = 2, nrow = nrow(newdata)))
+  colnames(predResult) <- c("truth", "response")
+  for (i in 1:nrow(cleanNewdata)){ #Für jede Test-Beobachtung
+    predResult[i,1] <- toString(newdata[i, 5]) #(Wahre Klasse wird schon im Voraus eingetragen) - To do: non-numeric Index dynamisch bestimmen
+    maxH <- -Inf
+    for (j in 1:nrow(model$means)){ #Und jede Klasse soll Formel (6), s. 130 berechnet werden
       classSpecificMeanVector <- as.numeric(model$means[j,-(ncol(model$means))])
-      
-      first <- t(invCov*classSpecificMeanVector)*as.numeric(newdata[j,])
-      second <- 0.5*classSpecificMeanVector*invCov*classSpecificMeanVector # zwei mal ohne transformation?
-      third <- log( model$apriori[j] , base = exp(1))
+      first <- t(invCov %*% classSpecificMeanVector) %*% as.numeric(cleanNewdata[j,])
+      second <- 0.5*classSpecificMeanVector %*% invCov %*% classSpecificMeanVector
+      third <- log( model$apriori , base = exp(1))
       ges <- first-second+third
-      print(ges)
-    }    
+      sum(ges)
+      if (sum(ges) >= maxH) {
+        predResult[i,2] <- toString(model$means[j,5]) #(Vorhergesate Klasse wird ergänzt) 
+        maxH <- sum(ges)
+      }
+    }
   }
+  return(predResult)
 }
 ```
 
@@ -148,10 +158,14 @@ Modell, Vorhersage und Fehlerrate
 ```{r}
 
 model <- train.mylda(train, "Species")
-prediction <- predict.mylda(model, test[,1:4])
+prediction <- predict.mylda(model, test)
 
-#print(model)
-#print(prediction)
+print(model)
+print(prediction)
+print("Accuracy:")
+prediction_eval(prediction, "succ")
+print("Mean misclassification error (Fehlerklassifikationsrate):")
+prediction_eval(prediction, "err")
 
 ```
 
@@ -166,12 +180,13 @@ model = train(learner, task)
 prediction = as.data.frame(predict(model, newdata = test))
 prediction_eval(prediction, "err")
 
-## To do
+##To do:
 # Vergleichen Sie die Fehlklassifikationsrate mit Ihrer eigenen Implementierung. Hätte man sich diesen Vergleich sparen können?
 
 ```
 
 Interpretation:
+
 
 ### b)
 ```{r}
