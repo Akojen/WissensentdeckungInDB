@@ -104,8 +104,8 @@ predict.mylda <- function(model, newdata) {
     maxH <- -Inf
     for (j in 1:nrow(model$means)){ #Und jede Klasse soll Formel (6), s. 130 berechnet werden
       classSpecificMeanVector <- as.numeric(model$means[j,-(ncol(model$means))])
-      first <- t(invCov * classSpecificMeanVector) * as.numeric(cleanNewdata[i,])
-      second <- 0.5 * classSpecificMeanVector * invCov * classSpecificMeanVector
+      first <- t(invCov %*% classSpecificMeanVector) %*% as.numeric(cleanNewdata[i,])
+      second <- 0.5 * classSpecificMeanVector %*% invCov %*% classSpecificMeanVector
       third <- log( model$apriori[j] , base = exp(1))
       ges <- first-second+third
       sumGes <- sum(ges)
@@ -157,10 +157,10 @@ prediction_eval <- function (pred) {
 
 print(model)
 print(prediction)
-print("Accuracy:")
+print("Prediction evaluation:")
 eval <- prediction_eval(prediction)
 eval
-paste(c("Mean misclassification error (Fehlerklassifikationsrate): ", round(eval[1,2]*100,digits= 2), "%"), collapse = "")
+paste(c("Mean misclassification error (Fehlerklassifikationsrate): ", round(eval[1,1]*100,digits= 2), "%"), collapse = "")
 
 ```
 
@@ -175,13 +175,12 @@ model = train(learner, task)
 prediction = predict(model, newdata = test)
 performance(prediction, measures = list(mmce, acc))
 
-##To do:
 # Vergleichen Sie die Fehlklassifikationsrate mit Ihrer eigenen Implementierung. Hätte man sich diesen Vergleich sparen können?
 
 ```
 
 Interpretation:
-
+Die Fehlklassifikationsrate ist mit 3,33% deutlich niedriger als die unserer eigenen Implementierung (70%). Daher scheint es, als wäre die Fischer'sche LDA der Kanonischen LDA überlegen.
 
 ### b)
 ```{r}
@@ -300,5 +299,5 @@ plotLearnerPrediction(learner = learnerRDA, task = taskCassini)
 
 ### b)
 
-#To do
-
+Insgesamt schein die lineare Diskriminanzanalyse lineare Trennungsverläufe der Entscheidungsgrenzen aufzuweisen. 
+Die Unterschiede zwischen Naive Bayes und der quadratischen Diskriminanzanalyse sind nur marginal, während sie zwischen der QDA und RDA, aufgrund der Wahl der Gamma- und Lambda-Parameter, nicht vorhanden sind.
