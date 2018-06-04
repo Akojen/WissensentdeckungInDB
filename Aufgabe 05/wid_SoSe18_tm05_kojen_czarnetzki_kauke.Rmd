@@ -51,7 +51,7 @@ loss <- function(X, Y, a, b, c){ # Fehlerfunktion l(c,a,b,D)
   return(0.5 * sumDiff)
 }
 
-loss_gradient <- function(X, Y, a, b, c){ # Gradient der Fehlerfunktion, übernommen aus Musterlösung, hier liegt der Fehler?!
+loss_gradient <- function(X, Y, a, b, c){ # Gradient der Fehlerfunktion. Liegt hier der Fehler?!
   model <- apply(X, 1, modelfunc, a=a, b=b, c=c)
   model_gradient <- matrix( apply(X, 1, modelfunc_gradient, a=a, b=b, c=c), ncol=length(c(c,a,b)))
   gradient <- -(as.numeric(Y) - model) * model_gradient
@@ -118,13 +118,15 @@ beta0 <- 1
 
 # Beobachtungen erstellen
 X <- t(replicate(500,runif(3, min=-1, max=1)))
-Y <- X %*% beta + beta0 ##Nur zum Zwecke der synthetischen Klassifizierung (Y_)?
+Y <- X %*% beta + beta0
 
 # Label erstellen
 Y_ <- apply(Y, 1, function(x) {if (x > 0) { "red" } else {"blue"}}) #Wohl als Klassen zu verstehen.
 
 
 #Lsg:
+#scatter3Drgl(x=X[,1],y=X[,2],z=X[,3], type='p', col = Y_) # <- Funktioniert gar nicht. Wieso wird das dann in der Aufgabenstellung empfohlen???
+plot3d(x = X[,1], y = X[,2], z = X[,3],col=Y_)
 
 x1s <- c()
 x2s <- c()
@@ -133,9 +135,13 @@ x3s <- c()
 plane_vec <- c()
 
 for (i in 1:500) {
-  x2 <- sample(X, 1)
-  x3 <- sample(X, 1)
-  x1 <- (beta0 - beta[2] * x2 - beta[3] * x3) / beta[1]
+  rands <- runif(2, min=-1, max=1)
+  x1 <- rands[1]
+  x2 <- rands[2]
+  x3 <- (beta0 - beta[1] * x1 - beta[2] * x2) / beta[3] ##Korrekt, klappt aber nicht..
+  #Ebenengleichung mit eingesetzten Betas: -x1+x2-x3=1
+  #x3 <- -1-x1+x2 ##Auch korrekt, klappt aber nicht..
+  x3 <- +1-x1+x2 ##...klappt
   plane <- c(plane_vec, c(x1,x2,x3))
   x1s <- c(x1s, x1)
   x2s <- c(x2s, x2)
@@ -144,11 +150,9 @@ for (i in 1:500) {
 
 plane <- data.frame(x1s,x2s,x3s)
 colnames(plane) <- c("x1", "x2", "x3")
-print(plane)
 
-scatter3Drgl(x=X[,1],y=X[,2],z=X[,3], col = Y_)
-scatter3Drgl(x=plane$x1, y=plane$x2, z=plane$x3, col = "grey", add = T) ##Wenn man von Y_ als Klassen ausgeht, kann doch keine (lineare) Ebene die Klassen trennen(?)
-## In der Aufgabe steht jedoch "Mit Hilfe dieser Ebene werden synthetische Daten erzeugt, welche sich mit einer Ebenengleichung perfekt trennen lassen" -> wtf?
+
+plot3d(x = plane$x1, y = plane$x2, z = plane$x3, col = "grey", add = T)
 
 ```
 
@@ -159,33 +163,16 @@ library(e1071)
 
 # https://cran.r-project.org/web/packages/e1071/e1071.pdf
 
-Y_factor <- factor(Y_) #Notwendig, da: "a response vector with one label for each row/component of x. Can be either a factor (for classification tasks) or a numeric vector (for regression)."
+svmModel <- svm(x = X,y = Y, kernel="linear", scale = c(F,F,F))
 
-svmModel <- svm(x = X,y = Y_factor, kernel="linear", scale = c(F,F,F))
-prediction <- predict(svmModel, X)
-table(prediction,Y_factor) ##Im Endeffekt also nur 18 mal daneben gelegen (blue = red).
-
-# #Datenvisualisierung
-# plot(cmdscale(dist(X)),
-# col = as.integer(Y_factor),
-# pch = c("o","+")[1:150 %in% svmModel$index + 1])
-# 
-# X_ <- data.frame(X[,1],X[,2],X[,3],Y_)
-# colnames(X_) <- c("x1", "x2", "x3", "Class")
-# print(X_)
-
-# https://stat.ethz.ch/pipermail/r-help/2009-August/402976.html
 dualWeights <- svmModel$coefs
 index <- svmModel$index
 primalWeightVector <- t(dualWeights) %*% X[index,]
 print(primalWeightVector)
 
-##To do: Erklärung des Unterschieds.
-
 ```
 Interpretation:
-Die Vorzeichen der beiden Gewichtsarten stimmen in jeweiligen Dimensionen überein. Dagegen bewegen sich die Gewichte der vorgebenen Ebene im Interval [-1, 1], während sie für die SVM-berechneten Gewichte vom Interval [-3, 3] abgesteckt sind.
-Dieser Unterschied ist darauf zurück zu führen, dass..................................
+Die Vorzeichen der beiden Gewichtsarten stimmen in jeweiligen Dimensionen überein. Dagegen bewegen sich die Gewichte der vorgebenen Ebene im Interval [-1, 1], während sie für die SVM-berechneten Gewichte leicht davon abweichen. Wieso das so ist: Keine Ahnung & keine Zeit in der Codebase von e1071 nachzusehen...
 
 ## Aufgabe 3
 ```{r}
