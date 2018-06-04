@@ -1,0 +1,186 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Übungsblatt 04"
+author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier die Namen aller Gruppenmitglieder eintragen!
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+```
+## Aufgabe 1
+
+### a)
+
+
+### b)
+```{r}
+modelfunc <- function(x, a, b, c) { # Modellfunktion implementiert
+  c_part <- c
+  a_part <- sum(a*as.numeric(x))
+  
+  b_part <- 0
+  for( i in 1:length(x) ){
+   for( j in i:length(x)){ 
+      b_part = b_part + (b[i,j] * as.numeric(x[i]) * as.numeric(x[j]))
+    }
+  }
+  return(sum(b_part, c_part, a_part))
+}
+
+modelfunc_gradient <- function(x, a, b, c){ # Gradient der Modellfunktion als Vektor ( 3 Werte )
+  d_c <- 1
+  d_a <- as.numeric(x)
+  d_b <- matrix(0, nrow=13, ncol= 13)
+  for( i in 1:length(x) ){
+    for( j in i:length(x)){
+        d_b[i,j] = (as.numeric(x[i]) * as.numeric(x[j])) # neue b-Matrix auffüllen
+    }
+  }
+  
+  #return( list("d_c"=d_c, "d_b"=d_b, "d_a"=d_a ) )
+  return( c(d_c, d_a, d_b) )
+}
+
+loss <- function(X, Y, a, b, c){ # Fehlerfunktion l(c,a,b,D)
+  sumDiff <- 0
+  for( i in 1:nrow(X) ){
+    sumDiff = sumDiff + ( as.numeric(Y[i]) - modelfunc(X[i,], a, b, c) )^2
+  }
+  return(0.5 * sumDiff)
+}
+
+loss_gradient <- function(X, Y, a, b, c){ # Gradient der Fehlerfunktion, übernommen aus Musterlösung, hier liegt der Fehler?!
+  model <- apply(X, 1, modelfunc, a=a, b=b, c=c)
+  model_gradient <- matrix( apply(X, 1, modelfunc_gradient, a=a, b=b, c=c), ncol=length(c(c,a,b)))
+  gradient <- -(as.numeric(Y)-model) * model_gradient
+  newCAB <- apply(gradient, 2, mean)
+  return (newCAB)
+}
+
+decent_gradient <- function(X, Y, steps, stepsize){ # führt die Anzahl der Schritte durch und berechnet Fehler und neue Paramter für a,b,c
+  # Initialisieren der Darstellung der Parameter
+  # im folgenden in gleicher Reihenfolge wie in Modellformel: c,a,b
+  c <- 0
+  a <- c(rep(0,13))
+  b <- matrix(0, byrow=T, ncol=13, nrow=13)
+  
+  # Parameter schrittweise in Gradientenrichtung bewegen
+  for( i in 1:steps){
+    #G radient von aktuellem Wert um Schrittweite(stepsize) "absteigen"
+    gradients <- loss_gradient(X,Y,a,b,c)
+    newParam <- c(c,a,b) - stepsize * (gradients/ sqrt(sum(gradients^2)))
+    
+    # daraus neue Parameter berechnen
+    c <- newParam[1]
+    a <- newParam[2:14]
+    b <- matrix( newParam[15:length((newParam))], ncol=13, nrow=13)
+    
+    #Verlust berechnen
+    current_loss <- loss(X, Y, a, b, c)
+    print( current_loss )
+  }
+  return( loss(X, Y, a, b, c) )
+}
+
+data <- read.table("housing.csv", header=TRUE, sep = ",")
+X <- data[1:13]
+Y <- unlist(data[14])
+ 
+dg_100 <- decent_gradient(X, Y, 10, 0.0002)
+
+```
+
+### c)
+
+### d)
+
+### e)
+
+
+## Aufgabe 2
+
+### a)
+```{r}
+library(plot3Drgl)
+
+# Definition der Ebenengleichung
+beta <- c(-1,1,-1)
+beta0 <- 1
+
+# Beobachtungen erstellen
+X <- t(replicate(500,runif(3, min=-1, max=1)))
+Y <- X %*% beta + beta0 ##Nur zum Zwecke der synthetischen Klassifizierung (Y_)?
+
+# Label erstellen
+Y_ <- apply(Y, 1, function(x) {if (x > 0) { "red" } else {"blue"}}) #Wohl als Klassen zu verstehen.
+
+
+#Lsg:
+
+x1s <- c()
+x2s <- c()
+x3s <- c()
+
+plane_vec <- c()
+
+for (i in 1:500) {
+  x2 <- sample(X, 1)
+  x3 <- sample(X, 1)
+  x1 <- (beta0 - beta[2] * x2 - beta[3] * x3) / beta[1]
+  plane <- c(plane_vec, c(x1,x2,x3))
+  x1s <- c(x1s, x1)
+  x2s <- c(x2s, x2)
+  x3s <- c(x3s, x3)
+}
+
+plane <- data.frame(x1s,x2s,x3s)
+colnames(plane) <- c("x1", "x2", "x3")
+print(plane)
+
+scatter3Drgl(x=X[,1],y=X[,2],z=X[,3], col = Y_)
+scatter3Drgl(x=plane$x1, y=plane$x2, z=plane$x3, col = "grey", add = T) ##Wenn man von Y_ als Klassen ausgeht, kann doch keine (lineare) Ebene die Klassen trennen(?)
+## In der Aufgabe steht jedoch "Mit Hilfe dieser Ebene werden synthetische Daten erzeugt, welche sich mit einer Ebenengleichung perfekt trennen lassen" -> wtf?
+
+```
+
+
+### b)
+```{r}
+library(e1071)
+
+# https://cran.r-project.org/web/packages/e1071/e1071.pdf
+
+Y_factor <- factor(Y_) #Notwendig, da: "a response vector with one label for each row/component of x. Can be either a factor (for classification tasks) or a numeric vector (for regression)."
+
+svmModel <- svm(x = X,y = Y_factor, kernel="linear", scale = c(F,F,F))
+prediction <- predict(svmModel, X)
+table(prediction,Y_factor) ##Im Endeffekt also nur 18 mal daneben gelegen (blue = red).
+
+# #Datenvisualisierung
+# plot(cmdscale(dist(X)),
+# col = as.integer(Y_factor),
+# pch = c("o","+")[1:150 %in% svmModel$index + 1])
+# 
+# X_ <- data.frame(X[,1],X[,2],X[,3],Y_)
+# colnames(X_) <- c("x1", "x2", "x3", "Class")
+# print(X_)
+
+# https://stat.ethz.ch/pipermail/r-help/2009-August/402976.html
+dualWeights <- svmModel$coefs
+index <- svmModel$index
+primalWeightVector <- t(dualWeights) %*% X[index,]
+print(primalWeightVector)
+
+##To do: Erklärung des Unterschieds.
+
+```
+Interpretation:
+Die Vorzeichen der beiden Gewichtsarten stimmen in jeweiligen Dimensionen überein. Dagegen bewegen sich die Gewichte der vorgebenen Ebene im Interval [-1, 1], während sie für die SVM-berechneten Gewichte vom Interval [-3, 3] abgesteckt sind.
+Dieser Unterschied ist darauf zurück zu führen, dass..................................
+
+## Aufgabe 3
+```{r}
+
+
+```
