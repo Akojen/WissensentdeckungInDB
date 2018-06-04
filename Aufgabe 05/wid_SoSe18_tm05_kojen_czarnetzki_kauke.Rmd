@@ -1,6 +1,6 @@
 ---
 title: "Wissensentdeckung in Datenbanken SoSe 2018"
-subtitle: "Übungsblatt 04"
+subtitle: "Übungsblatt 05"
 author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier die Namen aller Gruppenmitglieder eintragen!
 output: pdf_document
 ---
@@ -11,7 +11,9 @@ knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
 ## Aufgabe 1
 
 ### a)
-
+$$
+  \nabla f_{c,a,b}(x) = ( \frac{\partial f_{c,a,b}}{ \partial a}, \frac{\partial f_{c,a,b}}{ \partial b}, \frac{\partial f_{c,a,b}}{ \partial c}) = ( \sum_{i=1}^d x_i ,  \sum_{i=1}^d \sum_{j=i}^d x_i * x_j , 1 )
+$$
 
 ### b)
 ```{r}
@@ -38,7 +40,6 @@ modelfunc_gradient <- function(x, a, b, c){ # Gradient der Modellfunktion als Ve
     }
   }
   
-  #return( list("d_c"=d_c, "d_b"=d_b, "d_a"=d_a ) )
   return( c(d_c, d_a, d_b) )
 }
 
@@ -53,8 +54,8 @@ loss <- function(X, Y, a, b, c){ # Fehlerfunktion l(c,a,b,D)
 loss_gradient <- function(X, Y, a, b, c){ # Gradient der Fehlerfunktion, übernommen aus Musterlösung, hier liegt der Fehler?!
   model <- apply(X, 1, modelfunc, a=a, b=b, c=c)
   model_gradient <- matrix( apply(X, 1, modelfunc_gradient, a=a, b=b, c=c), ncol=length(c(c,a,b)))
-  gradient <- -(as.numeric(Y)-model) * model_gradient
-  newCAB <- apply(gradient, 2, mean)
+  gradient <- -(as.numeric(Y) - model) * model_gradient
+  newCAB <- apply(gradient, 2, sum)
   return (newCAB)
 }
 
@@ -78,8 +79,10 @@ decent_gradient <- function(X, Y, steps, stepsize){ # führt die Anzahl der Schr
     
     #Verlust berechnen
     current_loss <- loss(X, Y, a, b, c)
-    print( current_loss )
+    #print( current_loss )
   }
+  #cat("Config nach ", steps, " Schritten")
+  #cat("c: ", c, " a: ", a, " b: ", b)
   return( loss(X, Y, a, b, c) )
 }
 
@@ -87,7 +90,12 @@ data <- read.table("housing.csv", header=TRUE, sep = ",")
 X <- data[1:13]
 Y <- unlist(data[14])
  
-dg_100 <- decent_gradient(X, Y, 10, 0.0002)
+dg_1 <- decent_gradient(X, Y, 10, 0.0002)
+dg_2 <- decent_gradient(X, Y, 100, 0.002)
+
+cat("Nach 100 Schritten mit Schrittweite 0.0002: ", dg_1)
+cat("Nach 100 Schritten mit Schrittweite 0.002: ", dg_2)
+
 
 ```
 
