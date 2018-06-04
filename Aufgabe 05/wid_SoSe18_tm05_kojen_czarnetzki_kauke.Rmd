@@ -93,8 +93,8 @@ Y <- unlist(data[14])
 dg_1 <- decent_gradient(X, Y, 10, 0.0002)
 dg_2 <- decent_gradient(X, Y, 100, 0.002)
 
-cat("Nach 100 Schritten mit Schrittweite 0.0002: ", dg_1)
-cat("Nach 100 Schritten mit Schrittweite 0.002: ", dg_2)
+cat("Fehler nach 100 Schritten mit Schrittweite 0.0002: ", dg_1)
+cat("Fehler nach 100 Schritten mit Schrittweite 0.002: ", dg_2)
 
 
 ```
