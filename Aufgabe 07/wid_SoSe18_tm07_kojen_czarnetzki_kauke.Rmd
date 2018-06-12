@@ -1,0 +1,175 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Übungsblatt 07"
+author: "Sebastian Buschjäger, Malte Jastrow"  # Hier die Namen aller Gruppenmitglieder eintragen!
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+library("rpart")
+        # die Pakete muessen gegebenenfalls installiert werden!
+```
+## Aufgabe 1
+```{r}
+load("lungcancer.RData")
+```
+
+
+### a)
+Modell anpassen (Format der Daten beachten!)
+```{r}
+#For binomial and quasibinomial families the response can also be specified as a two-column matrix with the columns giving the numbers of successes (=FreqLunge) and failure
+expVar <- cbind(lungcancer$FreqLunge,lungcancer$FreqSonst)
+
+model <- glm(formula = expVar ~ Geschlecht + Alter + Raucherstatus + Ausbildung, family = binomial(), data = lungcancer)
+summary(model)
+
+
+```
+Interpretation:
+Alle Einflussgröße sind signifikant, jedoch kann der Einfluss des Alters nicht hinreichend interpretiert werden, da es sich dabei nicht um eine binäre Einflussgröße handelt.
+Statistische Signifikanz ergibt sich aus den P-Werten (letzte Spalte der 'Coefficients' Tabelle), mit denen die Nullhypothese, dass die jeweiligen Einflussgrößen keinen Einfluss auf den Lungenkrebstod haben, mit einem Signifikanzniveau von a < 0.001 (***) abgelehnt werden kann.
+Aus dem 'Estimate' lässt sich ablesen, dass weibliche Teilnehmer einer geringeren Wahrscheinlichkeit ausgesetzt waren an Lungenkrebs zu sterben als mänliche Teilnehmer. Das Gleiche gilt für Teilnehmer mit College-Ausbildung ggü. denen ohne C.-Ausbildung.
+Raucher unter den Teilnehmern hatten eine fast 3 Mal höhere Wahrscheinlichkeit an Lungenkrebs zu sterben, als Nichtraucher.
+
+
+### b)
+Berechnung
+```{r}
+exp(summary(model)$coefficients)
+
+```
+
+Interpretation:
+#TODO
+
+
+### c)
+```{r}
+# new.data = data.frame(
+#   Geschlecht    = c(),
+#   Alter         = c(),
+#   Raucherstatus = c(),
+#   Ausbildung    = c()
+
+new.data1 <- as.data.frame(subset(lungcancer, lungcancer$Alter == 63 & lungcancer$Ausbildung  == 0))
+odd1 <- sum(new.data1$FreqLunge) / sum(new.data1$FreqSonst)
+# model1 <- glm(formula = cbind(new.data1$FreqLunge,new.data1$FreqSonst) ~ Geschlecht + Raucherstatus, family = binomial(), data = new.data1)
+# summary(model1)
+
+new.data2 <- as.data.frame(subset(lungcancer, lungcancer$Alter == 63 & lungcancer$Ausbildung  == 1))                          
+odd2 <- sum(new.data2$FreqLunge) / sum(new.data2$FreqSonst)
+# model2 <- glm(formula = cbind(new.data2$FreqLunge,new.data2$FreqSonst) ~ Geschlecht + Raucherstatus, family = binomial(), data = new.data2)
+# summary(model2)
+
+oddsRatio <- odd1 / odd2
+print(oddsRatio)
+
+```
+Interpretation: 63jährigen Teilnehmer ohne Ausbildung waren einem höheren Risiko ausgesetzt an Lungenkrebs zu sterben.
+
+
+## Aufgabe 2
+
+### a)
+One-vs-All (One-vs-Rest):
+
+### b)
+One-vs-One:
+
+
+
+## Aufgabe 3
+### a)
+
+<!-- Es ist Ihnen freigestellt, ob Sie die Aufgabe im Markdown-Dokument lösen oder Sie die komplette Aufgabe 3 in einer separaten pdf-Datei abgeben -->
+
+Für jeden Knoten des Baumes wird eine Tabelle der folgenden Form benötigt:
+
+Entscheidung | $S(t_L)$       | $S(t_R)$   | $i(T_L)$    | $i(T_R)$    | $p_L \cdot i(T_L) + p_R \cdot i(T_R)$
+-------------|----------------|------------|-------------|-------------|---------------------------------------
+ $X< ?$      |                |            |             |             | 
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+             |                |            |             |             |
+
+
+
+
+
+
+### b)
+<!-- Auch hier ist Ihnen freisgestellt, ob sie in Latex einen Baum zeichnen möchten oder eine separate pdf-Datei abgeben -->
+
+
+### c)
+
+
+## Aufgabe 4
+### a)
+Daten
+```{r}
+set.seed(1)
+d <- data.frame(x1 = round(rep(c(4, 7), each = 30) + rnorm(30, sd = 2)),
+               x2 = round(rep(c(3, 6, 3, 6), each = 15) + rnorm(30, sd = 2)),
+               class = factor(rep(c(1, 0, 0, 1), each = 15)))
+
+```
+
+Modell
+```{r}
+
+
+
+```
+
+Plot
+```{r}
+
+
+
+```
+
+### b)
+```{r, fig.width= 6, fig.height = 6}
+plot(NULL, xlim = c(0, 10), ylim=c(0, 10), xlab = expression(x[1]), ylab = expression(x[2]),
+    axes = FALSE, bty = "o", cex.lab = 1.2)
+box()
+par(xaxp = c(0, 10, 10), yaxp = c(0, 10, 10))
+axis(1, 0:10, cex.axis = 1.2)
+axis(2, 0:10, cex.axis = 1.2)
+grid(NULL, NULL, lwd = 1)
+points(d$x1, d$x2, col = as.factor(d$class), pch = as.numeric(d$class) + 19)
+legend("topleft", legend = c("0", "1"), pch = c(20, 21), col = c(1,2))
+
+# hier die Befehele für die Eintscheidungsgrenzen hinzufügen
+# ...
+# ...
+
+```
+
+
+
+### c)
+```{r}
+
+
+```
+
+
