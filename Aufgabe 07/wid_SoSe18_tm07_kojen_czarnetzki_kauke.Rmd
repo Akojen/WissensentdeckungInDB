@@ -36,7 +36,10 @@ Statistische Signifikanz ergibt sich aus den P-Werten (letzte Spalte der 'Coeffi
 Berechnung
 ```{r}
 exp(summary(model)$coefficients)
-
+#Geschlecht:    0.5
+#Alter:         1.09
+#Raucherstatus: 18.15
+#Ausbildung:    0.75
 ```
 
 Interpretation:
@@ -48,19 +51,18 @@ Die Wahrscheinlichkeit dafür, dass Teilnehmer mit Collegeausbildung an Lungenkr
 
 ### c)
 ```{r}
+#new.data[1,] <- 63j Raucher ohne C.Ausbildung / new.data[2,] <- 63j Nichtraucherin mit C.Ausbildung
 new.data = data.frame(
-  Geschlecht    = c(0.538,1), 
-  Alter         = c(0.089),
-  Raucherstatus = c(18.146, 1),
-  Ausbildung    = c(0.748, 1)
+  Geschlecht    = c(0,1),
+  Alter         = c(63),
+  Raucherstatus = c(1,0),
+  Ausbildung    = c(0,1)
 )
-raucher = new.data[2, "Geschlecht"] * 63 * new.data[1, "Alter"] * new.data[1, "Raucherstatus"] * new.data[2, "Ausbildung"]
-nichtraucherin = new.data[1, "Geschlecht"] * 63 * new.data[1, "Alter"] * new.data[2, "Raucherstatus"] * new.data[1, "Ausbildung"]
- 
-raucher 
-nichtraucherin
+pred <- predict.glm(object = model, newdata = new.data, type = "response") #"type = "response" gives the predicted probabilities"
+pred
+pred[1] / pred[2] ##odds ratio für den Raucher ggü Nichtraucherin
 ```
-Interpretation: Das Risiko für den 63jährigen Raucher ist etwa 50 mal so hoch an Lungenkrebs zu sterben, wie für die 63jährige Nicht-Raucherin.
+Interpretation: Die Wahrscheinlichkeit dafür, dass 63jährige Raucher ohne C.Ausbildung an Lungenkrebs starben, war in etwa 44 Mal so hoch im Vergleich zur Wahrscheinlichkeit, dass 63jährigen Nichtraucherinnen mit C.Ausbildung an der selben Todesursache verstarben.
 
 
 ## Aufgabe 2
