@@ -19,12 +19,11 @@ load("lungcancer.RData")
 ### a)
 Modell anpassen (Format der Daten beachten!)
 ```{r}
-#For binomial and quasibinomial families the response can also be specified as a two-column matrix with the columns giving the numbers of successes (=FreqLunge) and failure
 expVar <- cbind(lungcancer$FreqLunge,lungcancer$FreqSonst)
+#For binomial and quasibinomial families the response can also be specified as a two-column matrix with the columns giving the numbers of successes (=FreqLunge) and failure
 
 model <- glm(formula = expVar ~ Geschlecht + Alter + Raucherstatus + Ausbildung, family = binomial(), data = lungcancer)
 summary(model)
-
 
 ```
 Interpretation:
@@ -75,9 +74,12 @@ Interpretation: 63jährigen Teilnehmer ohne Ausbildung waren einem höheren Risi
 ### a)
 One-vs-All (One-vs-Rest):
 
+Wenn in einem Trainingsdatensatz n Klassen vorhanden sind und die logistische Regression angewendet werden soll, so wird bei der One-vs-All-Methode für jede Klasse ein binärer Klassifikator bestimmt. Dabei ist die jeweilige Klasse als positiv und alle anderen zusammen als negativ definiert. Auf diesem Datensatz wird dann jeweils die logistische Regression angewandt, sodass wir für jede Klasse einen Klassifikator erhalten. Um nun einen neuen Datensatz x zu klassifizieren, wenden wir alle Klassifikatoren auf x an. Die Klasse mit dem maximalen Klassifikators für x wird dann gewählt.
+
 ### b)
 One-vs-One:
 
+Bei dieser Methode werden bei k Trainingsdatensätzen k*(k-1)/2 Klassifikatoren berechnet. So wird jeder Klassifikator durch das Unterscheiden von jeweils 2 Datensätzen trainiert. Soll nun ein neuer Datensatz x klassifiert werden, so werden wieder alle Klassifikatoren auf x angewandt. Jeder Klassifikator wählt eine der n Klassen für x aus. Diejenige Klasse, die am häufigsten gewählt wurde, wird von dieser Methode ausgewählt.
 
 
 ## Aufgabe 3
