@@ -78,11 +78,11 @@ Die Klasse mit dem maximalen Klassifikators für x wird dann gewählt.
 ### b)
 One-vs-One:
 
-Bei dieser Methode werden bei k Trainingsdatensätzen k*(k-1)/2 Klassifikatoren berechnet. 
-So wird jeder Klassifikator durch das Unterscheiden von jeweils 2 Datensätzen trainiert. 
+Bei dieser Methode werden bei k Klassen k*(k-1)/2 Klassifikatoren berechnet. 
+Jeder Klassifikator wird durch das Unterscheiden von allen Datensätzen aus genau zwei Klassen trainiert. 
 Soll nun ein neuer Datensatz x klassifiert werden, so werden wieder alle Klassifikatoren auf x angewandt. 
-Jeder Klassifikator wählt eine der n Klassen für x aus. 
-Diejenige Klasse, die am häufigsten gewählt wurde, wird von dieser Methode ausgewählt.
+Jeder Klassifikator bestimmt eine aus seinen beiden zur Verfügung stehenden Klassen aus. 
+Diejenige Klasse, die insgesamt von allen Klassifikatoren am häufigsten gewählt wurde, wird von dieser Methode ausgewählt.
 
 
 ## Aufgabe 3
