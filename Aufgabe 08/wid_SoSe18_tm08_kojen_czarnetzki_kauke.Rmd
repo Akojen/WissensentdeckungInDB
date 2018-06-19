@@ -1,0 +1,215 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Übungsblatt 08"
+author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier die Namen aller Gruppenmitglieder eintragen!
+output: pdf_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+library("MASS")
+library("rpart")
+library("rpart.plot")
+library("randomForest")
+library("mlbench")
+        # die Pakete muessen gegebenenfalls installiert werden!
+```
+
+## Aufgabe 1
+
+### a)
+
+Daten
+```{r}
+x = cbind(x1 = c(1, 2, 4, 5, 5, 6, 7, 7, 9, 9), x2 = c(4, 1, 8, 5, 1, 9, 7, 4, 7, 2))
+y = c(1, 1, 1, -1, -1, 1, 1, -1, -1, -1)
+plot(x[,1], x[,2], col = (y)+2, pch = 16, xlab = expression(x[1]), ylab = expression(x[2]))
+legend("topleft", legend = c("-1", "1"), col = c(1, 3), pch = 16, title = "y")
+```
+
+Weak Leraner
+```{r}
+h1 = function(x) if (x[1] <= 3) return(1) else return(-1)
+h2 = function(x) if (x[1] <= 8) return(1) else return(-1)
+h3 = function(x) if (x[2] > 6) return(1) else return(-1)
+```
+
+Initialisierung
+```{r}
+# https://www.informatik.uni-ulm.de/ni/Lehre/SS05/HauptseminarMustererkennung/ausarbeitungen/Szczot.pdf
+m <- length(x)
+D1 <- rep(1 / m, m)
+
+```
+
+
+Iteration 1
+```{r}
+train <- sapply(x, h1)
+H1 <- train * D1
+Y <- cbind(y,y)
+e1 <- 0
+for (i in m) {
+  if (H1[i] != Y[i]) {
+    e1 <- e1 + H1[i]
+  }
+}
+a1 <- 1/2 * log((1-e1)/e1)
+
+Z1 <- 0
+for (i in m) {
+  Z1 <- D1[i]*exp(-a1*Y[i]*h1(x[i]))
+}
+
+D2_mtx <- D1*exp(-a1*Y*h1(x)) / Z1
+D2 <- c(D2_mtx[,1],D2_mtx[,2])
+```
+
+Iteration 2
+```{r}
+train <- sapply(x, h2)
+H2 <- train * D2
+e2 <- 0
+for (i in m) {
+  if (H2[i] != Y[i]) {
+    e2 <- e2 + H2[i]
+  }
+}
+a2 <- 1/2 * log((1-e2)/e2) ##Fail..
+
+Z2 <- 0
+for (i in m) {
+  Z2 <- D2[i]*exp(-a2*Y[i]*h2(x[i]))
+}
+
+D3_mtx <- D1*exp(-a2*Y*h2(x)) / Z2
+D3 <- c(D3_mtx[,1],D3_mtx[,2])
+
+```
+
+Iteration 3
+```{r}
+
+```
+
+### b)
+```{r}
+xneu = c(6, 3)
+```
+
+Vorhersage
+```{r}
+
+H <- 0
+a <- c(a1,a2,a3)
+h <- c(h1,h2,h3)
+for (i in 1:3) {
+  H <- a[i]*sapply(xneu, h[i])
+}
+
+```
+
+
+
+## Aufgabe 2
+Datensätze erzeugen
+```{r}
+set.seed(123456789)
+test.ind = sample(1:nrow(iris), 10)
+iris.test = iris[test.ind, ]
+iris.train = iris[-test.ind, ]
+data.sets = replicate(5, iris.train[sample(1:nrow(iris.train), 28), c(sample(1:4,2), 5)], simplify = FALSE)
+
+```
+
+### a)
+
+Bäume
+```{r}
+
+```
+Plots
+```{r}
+
+```
+
+
+
+### b)
+
+Vorhersagen
+```{r}
+
+```
+
+Entscheidungen
+```{r}
+
+```
+
+Fehlerrate
+```{r}
+ 
+
+```
+
+
+### c)
+
+```{r}
+set.seed(123456789) # für Reproduzierbarkeit
+
+```
+
+
+```{r}
+set.seed(123456789) # für Reproduzierbarkeit
+
+```
+
+
+## Aufgabe 3
+
+### a)
+```{r}
+trainAndTest <- function(data, target, p) {
+
+  
+}
+```
+
+### b)
+```{r}
+looCV <- function(data, target) {
+
+
+}
+```
+
+### c)
+```{r}
+kCV <- function(data, target, k = 10) {
+
+}   
+```
+
+### d)
+```{r}
+e0bootstrap <- function(data, target, B) {
+
+
+}
+```
+
+### e)
+```{r}
+data(Sonar)
+set.seed(456)
+
+
+
+
+```
+
+
