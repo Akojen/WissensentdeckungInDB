@@ -39,44 +39,47 @@ Initialisierung
 ```{r}
 # https://www.informatik.uni-ulm.de/ni/Lehre/SS05/HauptseminarMustererkennung/ausarbeitungen/Szczot.pdf
 m <- nrow(x)
-D1Mtx <- repeat(1 / m, 10)
+D0 <- rep(1/ m, 10)
 
 ```
 
 
 Iteration 1
 ```{r}
-train <- sapply(x, h1)
-trainMtx <- matrix(train, nrow = nrow(x), ncol = 2, byrow = F)
-H1 <- trainMtx * D1Mtx
-e1 <- 0
-for (i in nrow(x)) {
-  if (H1[i,1] != y[i]) {
-    e1 <- e1 + H1[i,1]
+iteration <- function(Dt, h) {
+  train <- apply(x, 1 ,h)
+  e1 <- 0
+  for (i in 1:nrow(x)) {
+    if (train[i] != y[i]) {
+      e1 <- e1 + Dt[i]
+      
+    }
   }
-  if (H1[i,2] != y[i]) {
-    e1 <- e1 + H1[i,2]
+  a <- 1/2 * log((1-e1)/e1)
+  
+  Z1 <- 0
+  for (i in 1:m) {
+    Z1 <- Z1 + Dt[i]*exp(-a*y[i]*train[i])
   }
+  
+  DtPlus1 <- c()
+  for (i in 1:m) {
+    newElem <- Dt[i]*exp(-a*y[i]*train[i]) / Z1
+    DtPlus1 <- c(DtPlus1, newElem)  
+  }
+  return(list("d"=DtPlus1, "a" = a))
 }
-a1 <- 1/2 * log((1-e1)/e1)
-
-Z1 <- 0
-for (i in m/2) {
-  Z1 <- D1Mtx[i,]*exp(-a1*y[i]*cbind(h1(x[i,1]), h1(x[i,2])))
-}
-
-D2_mtx <- D1Mtx*exp(-a1*y*h1(x)) / Z1
-D2 <- c(D2_mtx[,1],D2_mtx[,2])
+Iter1Result <- iteration(D0, h1)
 ```
 
 Iteration 2
 ```{r}
-
+Iter2Result <- iteration(Iter1Result$d, h2)
 ```
 
 Iteration 3
 ```{r}
-
+Iter3Result <- iteration(Iter2Result$d, h3)
 ```
 
 ### b)
@@ -88,11 +91,9 @@ Vorhersage
 ```{r}
 
 H <- 0
-a <- c(a1,a2,a3)
-h <- c(h1,h2,h3)
-for (i in 1:3) {
-  H <- H + a[i]*sapply(xneu, h[i])
-}
+a <- c(Iter1Result$a,Iter2Result$a,Iter3Result$a)
+H <- a[1]*h1(xneu) + a[2]*h2(xneu) + a[3]*h3(xneu)
+print(sign(H))
 
 ```
 
