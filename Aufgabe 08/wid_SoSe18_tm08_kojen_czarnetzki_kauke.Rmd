@@ -150,17 +150,40 @@ rpart.plot(t5, uniform=TRUE,
 
 Vorhersagen
 ```{r}
+##"Betrachten Sie Ihre Bäume als kleinen Zufallswald" -> Problem: Wie kombiniert man einzelne rpart Bäume zu einem Wald?
 
+##"Klassifizieren Sie jede Beobachtung aus dem Testdatensatz mit jedem Baum aus Ihrem Wald"
+pred1 <- predict(t1, newdata = iris.test, type = "class")
+pred2 <- predict(t2, newdata = iris.test, type = "class")
+pred3 <- predict(t3, newdata = iris.test, type = "class")
+pred4 <- predict(t4, newdata = iris.test, type = "class")
+pred5 <- predict(t5, newdata = iris.test, type = "class")
 ```
 
 Entscheidungen
 ```{r}
+##"Bilden Sie daraus anschließend die Klassenvorhersage für jede Beobachtung"
 
+#-> Kombiniertes Data.frame aller Vorhersagen:
+comboPred <- cbind(as.data.frame(pred1), as.data.frame(pred2), as.data.frame(pred3), as.data.frame(pred4), as.data.frame(pred5))
+
+#-> Klassenvorhersage für jede Beobachtung (des Testdatensatzes):
+forestClasses <- apply(comboPred,1,function(x) names(which.max(table(x))))
+print(forestClasses)
 ```
 
 Fehlerrate
 ```{r}
- 
+##"Bestimmen Sie die Fehklassifikationsrate"
+eR1 <- mean(pred1 != iris.test$Species)
+eR2 <- mean(pred2 != iris.test$Species)
+eR3 <- mean(pred3 != iris.test$Species)
+eR4 <- mean(pred4 != iris.test$Species)
+eR5 <- mean(pred5 != iris.test$Species)
+
+comboTreeErr <- mean(c(eR1,eR2,eR3,eR4,eR5))
+
+print(paste0("Die Fehklassifikationsrate beträgt: ", comboTreeErr*100,"%"))
 
 ```
 
@@ -169,13 +192,17 @@ Fehlerrate
 
 ```{r}
 set.seed(123456789) # für Reproduzierbarkeit
-
+rf <- randomForest(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, data = iris.train, ntree = 5)
+predRf <- predict(rf, newdata = iris.test)
+errClass <- mean(predRf != iris.test$Species)
+print(paste0("Die Fehklassifikationsrate beträgt: ", errClass*100,"%"))
+print("Im Gegensatz zur Methode mit kombinierten Einzelbäumen, bei der die Klassen in 40% der Fälle falsche vorhergesagt wurden, gelingt mit randomForest eine perfekte Klassenvorhersage!!!")
 ```
 
 
 ```{r}
 set.seed(123456789) # für Reproduzierbarkeit
-
+##Passen Sie in einem weiteren Schritt alle Parameter des Random Forests, die die Aufteilung der Daten betreffen, an die Ausgangssituation in dieser Aufgabe an. Wodurch sind mögliche Unterschiede zum Ergebnis aus b) zu erklären?
 ```
 
 
