@@ -228,43 +228,100 @@ print("Standardmäßig scheint die Funktion 'randomForest' 63,2% des Trainingsda
 trainAndTest <- function(data, target, p) {
   Data <- data.frame(data, Class=target)
   
-  trainIndices <- sample(1:nrow(Data), nrow(Data)*(2*p), replace=F) #leifert immer die gleichen Indizes
+  set.seed(465)
+  trainIndices <- sample(1:nrow(Data), nrow(Data)*(2*p), replace=F) # sample liefert bei jedem ausführen die gleichen Indizes?!
+  
+  set.seed(465)
   testIndices <- sample(1:nrow(Data), nrow(Data)*(p), replace=F)
   train <- Data[trainIndices,]
   test <- Data[testIndices,]
   
-  fit <- lda(Class ~ ., Data, subset = trainIndices) # "Variables are collinear" ?! immer bei großem p, also kleinem trainingsdatensatz, fehler oder richtig so?
+  fit <- lda(Class ~ ., Data, subset = trainIndices)
   p <- predict( fit, test )
   
   testTargets <- Data[testIndices, ncol(Data)]
   freq <- table(testTargets == p$class)
   
-  acc <- freq[names(freq)=="TRUE"] / nrow(test)
-  miss <- 1-acc
-  paste( c("Fehlerrate TrainAndTest: ",  miss ) )
+  print(freq)
+  err <- freq[names(freq)=="FALSE"] / nrow(test)
+  return(err)
 }
 ```
 
 ### b)
 ```{r}
 looCV <- function(data, target) {
-
-
+  Data <- data.frame(data, Class=target)
+  indizes <- c(1:nrow(Data))
+  err <- 0
+  for(i in 1:nrow(data)){
+    trainIndices = indizes[-i]
+    fit <- lda(Class ~ ., Data, subset = trainIndices)
+    p <- predict( fit, Data[i,] )
+    
+    if (p$class != Data[i, ncol(Data)]){
+      err = err+1
+    }
+  }
+  return(err/nrow(Data))
 }
 ```
 
 ### c)
 ```{r}
 kCV <- function(data, target, k = 10) {
-
+  Data <- data.frame(data, Class=target)
+  indices <- c(1:nrow(Data))
+  err <- c()
+  maxGroupSize <- floor(nrow(Data)/k)
+  
+  for (i in 1:k){
+    
+    groupSize <- maxGroupSize
+    while(groupSize > length(indices)){ #letzte Gruppe ist manchmal kleiner
+      groupSize <- groupSize-1
+    }
+    
+    testIndices <- sample(indices, groupSize, replace=F)
+    trainIndices <- setdiff(c(1:nrow(Data)), testIndices)
+    indices <- setdiff(indices, testIndices)
+    
+    fit <- lda(Class ~ ., Data, subset = trainIndices)
+    p <- predict( fit, Data[testIndices,] )
+    
+    testTargets <- Data[testIndices, ncol(Data)]
+    freq <- table(testTargets == p$class)
+    
+    groupErr <- freq[names(freq)=="FALSE"] / groupSize
+    err <- c(err, groupErr)
+    
+  }
+  return(mean(err))
 }   
 ```
 
 ### d)
 ```{r}
 e0bootstrap <- function(data, target, B) {
+  Data <- data.frame(data, Class=target)
+  err <- c()
+  
 
-
+  for (b in 1:B){ # B Wiederholungen
+    trainIndices <- sample(1:nrow(Data), nrow(data), replace=T) # mit zuruecklegen
+    testIndices <- setdiff(c(1:nrow(Data)), trainIndices)
+    
+    fit <- lda(Class ~ ., Data, subset = trainIndices)
+    p <- predict( fit, Data[testIndices,] )
+    
+    testTargets <- Data[testIndices, ncol(Data)]
+    freq <- table(testTargets == p$class)
+    
+    groupErr <- freq[names(freq)=="FALSE"] / length(testIndices)
+    err <- c(err, groupErr)
+    
+  }
+  return(mean(err))
 }
 ```
 
@@ -273,7 +330,22 @@ e0bootstrap <- function(data, target, B) {
 data(Sonar)
 set.seed(456)
 
-trainAndTest(Sonar[,-ncol(Sonar)], Sonar[,ncol(Sonar)], 0.25)
+data <- Sonar[,-ncol(Sonar)]
+target <- Sonar[,ncol(Sonar)]
+
+errTT <- trainAndTest(data, target, 0.25)
+errLO <- looCV(data, target)
+errCV <- kCV(data, target, 10)
+errBootstrap <- e0bootstrap(data, target, 200)
+
+cat("Fehlerrate Train-and-Test: ", errTT, "\n")
+cat("Fehlerrate Leave-one-out: ", errLO, "\n")
+cat("Fehlerrate k-fache Kreuzvalidierung: ", errCV, "\n")
+cat("Fehlerrate e0-Bootstrap: ", errBootstrap, "\n")
+
+# Ergebnisse aus irgendeinem Grund bei jedem ausführen gleich, da sample trotzt set.seed() die selben Werte liefert. Problem mit meiner R Version?
+
+# Interpretation: TODO
 
 ```
 
