@@ -228,18 +228,20 @@ print("Standardmäßig scheint die Funktion 'randomForest' 63,2% des Trainingsda
 trainAndTest <- function(data, target, p) {
   Data <- data.frame(data, Class=target)
   
-  trainIndices <- sample(1:nrow(Data), nrow(Data)*(1-p), replace=F) #leifert immer die gleichen Indizes
+  trainIndices <- sample(1:nrow(Data), nrow(Data)*(2*p), replace=F) #leifert immer die gleichen Indizes
+  testIndices <- sample(1:nrow(Data), nrow(Data)*(p), replace=F)
   train <- Data[trainIndices,]
-  test <- Data[-trainIndices,]
+  test <- Data[testIndices,]
   
   fit <- lda(Class ~ ., Data, subset = trainIndices) # "Variables are collinear" ?! immer bei großem p, also kleinem trainingsdatensatz, fehler oder richtig so?
   p <- predict( fit, test )
   
-  testTargets <- Data[-trainIndices, ncol(Data)]
+  testTargets <- Data[testIndices, ncol(Data)]
   freq <- table(testTargets == p$class)
   
   acc <- freq[names(freq)=="TRUE"] / nrow(test)
-  paste( c("TrainAndTest: ",  acc ) )
+  miss <- 1-acc
+  paste( c("Fehlerrate TrainAndTest: ",  miss ) )
 }
 ```
 
