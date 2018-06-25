@@ -242,7 +242,6 @@ trainAndTest <- function(data, target, p) {
   testTargets <- Data[testIndices, ncol(Data)]
   freq <- table(testTargets == p$class)
   
-  print(freq)
   err <- freq[names(freq)=="FALSE"] / nrow(test)
   return(err)
 }
@@ -254,6 +253,7 @@ looCV <- function(data, target) {
   Data <- data.frame(data, Class=target)
   indizes <- c(1:nrow(Data))
   err <- 0
+  
   for(i in 1:nrow(data)){
     trainIndices = indizes[-i]
     fit <- lda(Class ~ ., Data, subset = trainIndices)
@@ -282,6 +282,7 @@ kCV <- function(data, target, k = 10) {
       groupSize <- groupSize-1
     }
     
+    set.seed(465)
     testIndices <- sample(indices, groupSize, replace=F)
     trainIndices <- setdiff(c(1:nrow(Data)), testIndices)
     indices <- setdiff(indices, testIndices)
@@ -308,6 +309,7 @@ e0bootstrap <- function(data, target, B) {
   
 
   for (b in 1:B){ # B Wiederholungen
+    set.seed(465)
     trainIndices <- sample(1:nrow(Data), nrow(data), replace=T) # mit zuruecklegen
     testIndices <- setdiff(c(1:nrow(Data)), trainIndices)
     
@@ -342,8 +344,6 @@ cat("Fehlerrate Train-and-Test: ", errTT, "\n")
 cat("Fehlerrate Leave-one-out: ", errLO, "\n")
 cat("Fehlerrate k-fache Kreuzvalidierung: ", errCV, "\n")
 cat("Fehlerrate e0-Bootstrap: ", errBootstrap, "\n")
-
-# Ergebnisse aus irgendeinem Grund bei jedem ausführen gleich, da sample trotzt set.seed() die selben Werte liefert. Problem mit meiner R Version?
 
 # Interpretation: TODO
 
