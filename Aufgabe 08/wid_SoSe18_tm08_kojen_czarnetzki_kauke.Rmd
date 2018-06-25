@@ -214,7 +214,7 @@ rf_new <- randomForest(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Pet
 predRf_new <- predict(rf_new, newdata = iris.test)
 errClass <- mean(predRf_new != iris.test$Species)
 print(paste0("Die Fehklassifikationsrate beträgt: ", errClass*100,"%"))
-print("Standardmäßig scheint die Funktion 'randomForest' 63,2% des Trainingsdatensatzes zu nutzen (hier 89 Samples = ceiling(.632*nrow(iris.train))). Dies scheint wiederum zum Problem des 'Oversamplings' zu führen, was wiederum zu einer perfekten Vorhersage führte. Da hier das Sampling per Argument 'sampsize', vergleichbar mit der Ausgangssituation, auf 28 gesetzt wurde, tritt das Problem nicht mehr auf.")
+print("Standardmäßig scheint die Funktion 'randomForest' 63,2% des Trainingsdatensatzes zu nutzen (hier 89 Samples = ceiling(.632*nrow(iris.train))). Dies scheint wiederum zum Problem des 'Overfittings' zu führen, was wiederum zu einer perfekten Vorhersage führte. Da hier das Sampling per Argument 'sampsize', vergleichbar mit der Ausgangssituation, auf 28 gesetzt wurde, tritt das Problem nicht mehr auf.")
 
 ### https://stats.stackexchange.com/a/24914 
 # Increasing the sample size results in a "less random" forest, and so has a tendency to overfit. Decreasing the sample size increases the variation in the individual trees within the forest, preventing overfitting, but usually at the expense of model performance. A useful side-effect is that lower sample sizes reduce the time needed to train the model.
@@ -244,6 +244,24 @@ trainAndTest <- function(data, target, p) {
   
   err <- freq[names(freq)=="FALSE"] / nrow(test)
   return(err)
+  
+  # set.seed(465)
+  # test_idx <- sample(nrow(data), nrow(data)*p, replace=F)
+  # test <- data[test_idx, ]
+  # train_idx <- sample(nrow(data), nrow(data)*(1-p), replace=F)
+  # fit <- lda(target ~ ., data = data, subset = train_idx)
+  # pred <- predict(fit, test)
+  # 
+  # #eval:
+  # err <- 0
+  # predClasses <- pred[["class"]]
+  # targetClasses <- target[test_idx]
+  # for (i in 1:length(predClasses)) {
+  #   if (predClasses[i] != targetClasses[i]) {
+  #     err <- err+1
+  #   }
+  # }
+  # return(err/nrow(test))
 }
 ```
 
