@@ -151,6 +151,11 @@ rpart.plot(t5, uniform=TRUE,
 Vorhersagen
 ```{r}
 ##"Betrachten Sie Ihre Bäume als kleinen Zufallswald" -> Problem: Wie kombiniert man einzelne rpart Bäume zu einem Wald?
+############### Random Forests (Zufallswälder) Datei, F. 260 ###############
+## Ein neues Objekt wird dann von dem Zufallswald so
+## klassifiziert, dass es von jedem der berechneten Bäume einmal
+## klassifiziert wird und dann der Klasse zugeordnet wird, die die
+## meisten Bäume bevorzugt haben (Demokratie im Wald!).
 
 ##"Klassifizieren Sie jede Beobachtung aus dem Testdatensatz mit jedem Baum aus Ihrem Wald"
 pred1 <- predict(t1, newdata = iris.test, type = "class")
@@ -167,7 +172,7 @@ Entscheidungen
 #-> Kombiniertes Data.frame aller Vorhersagen:
 comboPred <- cbind(as.data.frame(pred1), as.data.frame(pred2), as.data.frame(pred3), as.data.frame(pred4), as.data.frame(pred5))
 
-#-> Klassenvorhersage für jede Beobachtung (des Testdatensatzes):
+#-> Klassenvorhersage für jede Beobachtung (des Testdatensatzes) ~ "Demokratie im Wald!":
 forestClasses <- apply(comboPred,1,function(x) names(which.max(table(x))))
 print(forestClasses)
 ```
@@ -196,13 +201,23 @@ rf <- randomForest(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.W
 predRf <- predict(rf, newdata = iris.test)
 errClass <- mean(predRf != iris.test$Species)
 print(paste0("Die Fehklassifikationsrate beträgt: ", errClass*100,"%"))
-print("Im Gegensatz zur Methode mit kombinierten Einzelbäumen, bei der die Klassen in 40% der Fälle falsche vorhergesagt wurden, gelingt mit randomForest eine perfekte Klassenvorhersage!!!")
+print("Im Gegensatz zur Methode mit kombinierten Einzelbäumen, bei der die Klassen in 40% der Fälle falsch vorhergesagt wurden, gelingt mit randomForest (mit den gegebenen Seed) eine perfekte Klassenvorhersage!!!")
 ```
 
 
 ```{r}
 set.seed(123456789) # für Reproduzierbarkeit
 ##Passen Sie in einem weiteren Schritt alle Parameter des Random Forests, die die Aufteilung der Daten betreffen, an die Ausgangssituation in dieser Aufgabe an. Wodurch sind mögliche Unterschiede zum Ergebnis aus b) zu erklären?
+## --> Zusätzliche Option: sampsize = 28?
+
+rf_new <- randomForest(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, data = iris.train, ntree = 5, sampsize = 28)
+predRf_new <- predict(rf_new, newdata = iris.test)
+errClass <- mean(predRf_new != iris.test$Species)
+print(paste0("Die Fehklassifikationsrate beträgt: ", errClass*100,"%"))
+print("Standardmäßig scheint die Funktion 'randomForest' 63,2% des Trainingsdatensatzes zu nutzen (hier 89 Samples = ceiling(.632*nrow(iris.train))). Dies scheint wiederum zum Problem des 'Oversamplings' zu führen, was wiederum zu einer perfekten Vorhersage führte. Da hier das Sampling per Argument 'sampsize', vergleichbar mit der Ausgangssituation, auf 28 gesetzt wurde, tritt das Problem nicht mehr auf.")
+
+### https://stats.stackexchange.com/a/24914 
+# Increasing the sample size results in a "less random" forest, and so has a tendency to overfit. Decreasing the sample size increases the variation in the individual trees within the forest, preventing overfitting, but usually at the expense of model performance. A useful side-effect is that lower sample sizes reduce the time needed to train the model.
 ```
 
 
