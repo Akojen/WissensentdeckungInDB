@@ -228,10 +228,10 @@ print("Standardmäßig scheint die Funktion 'randomForest' 63,2% des Trainingsda
 trainAndTest <- function(data, target, p) {
   Data <- data.frame(data, Class=target)
   
-  set.seed(465)
+  #set.seed(312)
   trainIndices <- sample(1:nrow(Data), nrow(Data)*(2*p), replace=F) # sample liefert bei jedem ausführen die gleichen Indizes?!
   
-  set.seed(465)
+  #set.seed(312)
   testIndices <- sample(1:nrow(Data), nrow(Data)*(p), replace=F)
   train <- Data[trainIndices,]
   test <- Data[testIndices,]
@@ -350,6 +350,8 @@ e0bootstrap <- function(data, target, B) {
 data(Sonar)
 set.seed(456)
 
+print(nrow(Sonar))
+
 data <- Sonar[,-ncol(Sonar)]
 target <- Sonar[,ncol(Sonar)]
 
@@ -363,7 +365,7 @@ cat("Fehlerrate Leave-one-out: ", errLO, "\n")
 cat("Fehlerrate k-fache Kreuzvalidierung: ", errCV, "\n")
 cat("Fehlerrate e0-Bootstrap: ", errBootstrap, "\n")
 
-# Interpretation: TODO
+# Interpretation: Unsere Ergebnisse hängen stark vom Einsatz von set.seed(..) ab. Somit lässt sich hier schwer eine gute Interpretation finden. Teilweise hatten wir bei Train-and-Test eine Fehhlerrate von ~1%. Die Train-and-Test Methode funktioniert hier allerdings insgesamt mit verschiedenen seed-Werten am besten, weil der Datensatz relativ klein ist (208 Einträge) und Teile der Trainingsdaten in der Testmenge wiederverwendet werden. Auch der e0-Bootstrap funktioniert besser als Leave-One-out und die 10-fache Kreuzvalidierung, da hier der kleine Datensatz 200 mal genutzt wird um die Fehlerrate genauer zu bestimmen.
 
 ```
 
