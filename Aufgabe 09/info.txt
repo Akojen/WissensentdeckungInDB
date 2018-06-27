@@ -1,0 +1,18 @@
+Six variables measured on 100 genuine and 100 counterfeit old Swiss 1000-franc 
+bank notes. The data stem from Flury and Riedwyl (1988). The columns correspond 
+to the following 7 variables.
+
+Length (x1): 		Length of the bank note,
+Height.left (x2):	Height of the bank note, measured on the left,
+Height.right (x3):	Height of the bank note, measured on the right,
+Inner.Frame.lower (x4):	Distance of inner frame to the lower border,
+Inner.Frame.upper (x5):	Distance of inner frame to the upper border,
+Diagonal (x6): 		Length of the diagonal,
+
+Class:			Th class label, genuine or counterfeit.
+
+Observations 1-100 are the genuine bank notes and the other 100 observations 
+are the counterfeit bank notes. 
+
+References:
+Flury, B. and Riedwyl, H. (1988). Multivariate Statistics, A practical Approach, Cambridge University Press. 

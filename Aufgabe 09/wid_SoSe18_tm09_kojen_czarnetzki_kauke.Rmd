@@ -1,0 +1,159 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Übungsblatt 09"
+author: "Sebastian Buschjäger, Malte Jastrow"  # Hier die Namen aller Gruppenmitglieder eintragen!
+output: pdf_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+library("MASS")
+library("mlr")
+library("mlbench")
+library("caTools")
+        # die Pakete muessen gegebenenfalls installiert werden!
+```
+
+## Aufgabe 1
+
+### a)
+Learner
+```{r}
+
+```
+Tasks
+```{r}
+
+```
+
+
+Plots
+```{r, fig.pos = "p", fig.height = 4}
+
+```
+
+
+### b)
+
+
+
+
+## Aufgabe 2
+```{r}
+S <- matrix(c(5, 2, 2, 2), nrow = 2)
+```
+
+### a)
+```{r}
+```
+Die Hauptkomponenten lauten
+$$
+z_1 = 
+$$
+$$
+z_2 =
+$$
+Der Anteil der durch die erste Hauptkomponente erklärten Varianz ergibt sich durch:
+```{r}
+
+```
+
+
+
+
+### b)
+Korrelationsmatrix
+```{r}
+
+
+```
+
+
+```{r}
+```
+Hauptkomponenten bzw. Scores $z_1$ und $z_2$:
+$$
+z_1 = 
+$$
+$$
+z_2 = 
+$$
+
+Varianzanteil
+```{r}
+
+```
+
+### c)
+
+
+## Aufgabe 3
+Einlesen der Daten
+```{r}
+daten <- read.table("bank.txt")
+```
+
+### a)
+HKA auf Basis von Kovarianzen:
+```{r}
+
+```
+
+HKA auf Basis von Korrelationen:
+```{r}
+
+```
+
+### b)
+
+Screeplot
+```{r}
+
+```
+
+Anteil an der Gesamtvarianz
+```{r}
+
+```
+
+### c)
+Biplot
+```{r}
+
+```
+
+
+Interpretation:
+
+## Aufgabe 4
+
+### a)
+
+
+### b)
+Funktion zum Simulieren
+```{r}
+
+```
+
+Simulation
+```{r}
+
+```
+
+Darstellung
+```{r}
+
+```
+
+
+### c)
+Glätten mit einem einfachen gleitenden Durchschnitt
+```{r}
+
+```
+
+
+
+
