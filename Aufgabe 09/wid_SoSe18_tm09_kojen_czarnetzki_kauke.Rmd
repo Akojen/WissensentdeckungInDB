@@ -1,7 +1,7 @@
 ---
 title: "Wissensentdeckung in Datenbanken SoSe 2018"
 subtitle: "Übungsblatt 09"
-author: "Sebastian Buschjäger, Malte Jastrow"  # Hier die Namen aller Gruppenmitglieder eintragen!
+author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier die Namen aller Gruppenmitglieder eintragen!
 output: pdf_document
 
 ---
@@ -20,10 +20,23 @@ library("caTools")
 ### a)
 Learner
 ```{r}
+# Wenden Sie die folgenden Lernverfahren mit mlr auf die Datensätze an: Naive Bayes,
+# kNN mit k = 3 und mit k = 21, SVM mit linearem und mit radialem Kern, AdaBoost, Entscheidungsbaum
+# und Random Forest mit 5 und mit 500 Bäumen. Visualisieren Sie die Entscheidungsgrenzen
+# (plotLearnerPrediction)
+
+#Daten:
+normals <- mlbench.2dnormals(500, 2)
+circles <- mlbench.circle(500, 2)
+spirals <- mlbench.spirals(500, cycles = 2)
+
 
 ```
 Tasks
 ```{r}
+#to do: Wie in älteren Übungen. Tasks & Learner in liste packen und dann (mit Schleife?) plotten 
+normalsTask = makeClassifTask(data = normals, target = "Class")
+model = train(makeLearner("classif.naiveBayes"), task)
 
 ```
 
@@ -129,11 +142,16 @@ Interpretation:
 ## Aufgabe 4
 
 ### a)
-
+Es handelt sich dabei um autoregressive Prozesse 1-ter Ordnung.
+Dabei sind, aufgrund der Vorraussetzung von |ß_2| < 1 (F. 396, Zeitreihenanalyse.pdf), der 1. Prozess stationär, der 2. Prozess dagegen nicht.
 
 ### b)
 Funktion zum Simulieren
 ```{r}
+#F. 398:
+erwWert1 <- 1 / (1-(-0.9))
+#zeitReihe1 <- arima.sim(n = 500, list(ar = c(1, -0.9), ma = c(-0.2279, 0.2488)),
+          sd = sqrt(0.1796))
 
 ```
 
