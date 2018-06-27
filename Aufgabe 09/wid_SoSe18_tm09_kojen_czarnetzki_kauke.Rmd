@@ -95,7 +95,8 @@ $$
 
 Varianzanteil
 ```{r}
-
+#Irgendwo im A2 kann man wohl Funktion cov2cor nutzen oder(?):
+# Cov / wurzel (produkt der varianzen)
 ```
 
 ### c)
@@ -148,28 +149,53 @@ Dabei sind, aufgrund der Vorraussetzung von |ß_2| < 1 (F. 396, Zeitreihenanalys
 ### b)
 Funktion zum Simulieren
 ```{r}
-#F. 398:
-erwWert1 <- 1 / (1-(-0.9))
-#zeitReihe1 <- arima.sim(n = 500, list(ar = c(1, -0.9), ma = c(-0.2279, 0.2488)),
-          sd = sqrt(0.1796))
-
+proc1 <- c(1, -0.9)
+proc2 <- c(-0.2, 1.25)
+errors <- rnorm(0,0.5, n = 500)
 ```
 
 Simulation
 ```{r}
+timeSeriesSim <- function(process, err) {
+  n <- length(err)
+  beta1 <- process[1]
+  beta2 <- process[2]
+  yt <- c(0) #yt1: 0 quasi als Startparameter, da noch kein yt-1 da ist.
+  for (i in 2:n) {
+    yt <- c(yt,beta1+beta2*yt[i-1]+err[i])
+  }
+  return(yt)
+}
+
+ts1 <- timeSeriesSim(proc1, errors)
+ts2 <- timeSeriesSim(proc2, errors)
+
+#ts1 <- arima.sim(n = 500, list(ar = proz1), sd = sqrt(0.5))
+#ts2 <- arima.sim(n = 500, list(ar = proz2), sd = sqrt(0.5))
 
 ```
 
 Darstellung
 ```{r}
-
+#F. 398:
+expVal1 <- 1 / (1-(-0.9))
+plot1 <- plot(1:500, y = ts1, type = "l")
+abline(h =expVal1, col = "green")
+plot2 <- plot(1:500, y = ts2, type = "l")
 ```
 
 
 ### c)
 Glätten mit einem einfachen gleitenden Durchschnitt
 ```{r}
+runmean1 <- runmean(x = ts1, k = 20)
+plot1 <- plot(1:500, y = ts1, type = "l")
+abline(h =expVal1, col = "green")
+lines(runmean1, col = "red")
 
+runmean2 <- runmean(x = ts2, k = 20)
+plot2 <- plot(1:500, y = ts2, type = "l")
+lines(runmean2, col = "red")
 ```
 
 
