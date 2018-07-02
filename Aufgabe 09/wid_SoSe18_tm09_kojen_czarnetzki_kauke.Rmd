@@ -150,18 +150,20 @@ pca_cor <- prcomp(daten.num, scale. = T)
 Screeplot
 ```{r}
 
-summary(pca_cov)
-summary(pca_cor)
-
-screeplot(pca_cov)
-screeplot(pca_cor)
+screeplot(pca_cov, type="l")
+screeplot(pca_cor, type="l")
 
 ```
 
 Anteil an der Gesamtvarianz
 ```{r}
-
+summary(pca_cov)
+summary(pca_cor)
 ```
+
+Nach der HKA auf Basis der Kovarianzmatrix ergibt sich eine Reduktion auf die ersten 3 Hauptkomponenten, da hier der Screeplot abflacht und bereit 93% der Varianz ausmachen. Auf Basis der Korrelationsmatrix würde man allerdings nur auf 4 Komponenten reduzieren, da hier erst eine Gesamtvariant von 93% erreicht wird.
+
+# TODO: Für welche der beiden Hauptkomponentenanalysen aus Teil a) sollten die Loadings überhaupt interpretiert werden? Interpretieren Sie die entsprechenden Loadings der ersten Hauptkomponente
 
 ### c)
 Biplot
@@ -174,6 +176,7 @@ biplot(pca_cor, main="COR")
 
 
 Interpretation:
+# TODO: Welche Scores-Struktur liegt vor? Vergleichen und interpretieren Sie die Bi-Plots.
 
 ## Aufgabe 4
 
