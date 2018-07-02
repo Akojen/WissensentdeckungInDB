@@ -59,16 +59,35 @@ S <- matrix(c(5, 2, 2, 2), nrow = 2)
 
 ### a)
 ```{r}
+eigenVal <- eigen(S)$values
+# Mit diesen Eigenwerten ergeben sich die Eigenvektoren
+eigenVec <- cbind (c(-1,2), c(2,1))
+Z <- eigenVec %*% S
+varZ <- var(Z)
+
+
+print(eigenVal)
+print(eigenVec)
+print(Z)
 ```
+Die Loadings lauten
+$$ 
+g_1 = \begin{pmatrix}-1\\2\end{pmatrix} \\
+g_2 = \begin{pmatrix}2\\1\end{pmatrix}
+$$
+
 Die Hauptkomponenten lauten
-$$
-z_1 = 
-$$
-$$
-z_2 =
+$$ 
+z_1 = \begin{pmatrix}-1\\2\end{pmatrix} \\
+z_2 = \begin{pmatrix}12\\6\end{pmatrix}
 $$
 Der Anteil der durch die erste Hauptkomponente erklärten Varianz ergibt sich durch:
 ```{r}
+rP1 <- sum( varZ[1,] )
+rK <- sum( varZ )
+anteil1 <- rP1/rK
+
+cat("\nAnteil der ersten Hauptkomponente ist ", anteil1, "\n") # oder hier schon geordnet?!
 
 ```
 
@@ -79,7 +98,7 @@ Der Anteil der durch die erste Hauptkomponente erklärten Varianz ergibt sich du
 Korrelationsmatrix
 ```{r}
 
-
+#corr <- cor(S) # geht nicht
 ```
 
 
