@@ -97,8 +97,14 @@ cat("\nAnteil der ersten Hauptkomponente ist ", anteil1, "\n") # oder hier schon
 ### b)
 Korrelationsmatrix
 ```{r}
+cor <- cov2cor(S)
 
-#corr <- cor(S) # geht nicht
+eigenVal_ <- eigen(cor)$values
+eigenVec_ <- eigen(cor)$vector
+Z_ <- eigenVec_ %*% cor
+varZ_ <- var(Z_)
+
+print(Z_)
 ```
 
 
@@ -106,16 +112,20 @@ Korrelationsmatrix
 ```
 Hauptkomponenten bzw. Scores $z_1$ und $z_2$:
 $$
-z_1 = 
+z_1 = \begin{pmatrix}0.2598932\\-0.2598932\end{pmatrix}
 $$
 $$
-z_2 = 
+z_2 = \begin{pmatrix}1.1543204\\1.1543204\end{pmatrix}
 $$
 
 Varianzanteil
 ```{r}
-#Irgendwo im A2 kann man wohl Funktion cov2cor nutzen oder(?):
-# Cov / wurzel (produkt der varianzen)
+rP2 <- sum( varZ_[1,] )
+rK2 <- sum( varZ_ )
+anteil2 <- rP2/rK2
+
+cat("\nAnteil der ersten Hauptkomponente ist ", anteil2, "\n")
+
 ```
 
 ### c)
@@ -134,14 +144,16 @@ HKA auf Basis von Kovarianzen:
 daten.num <- daten[,1:6]
 daten.class <- daten[,7]
 
-pca_cov <- prcomp(daten.num, scale. = F) # in man: princomp(USArrests, cor = TRUE) # =^= prcomp(USArrests, scale=TRUE)
+#pca_cov <- prcomp(daten.num, scale. = F)
+pca_cov <- princomp(daten.num, cor = FALSE)
 
 ```
 
 HKA auf Basis von Korrelationen:
 ```{r}
 
-pca_cor <- prcomp(daten.num, scale. = T)
+#pca_cor <- prcomp(daten.num, scale. = T)
+pca_cor <- princomp(daten.num, cor = TRUE)
 
 ```
 
@@ -159,24 +171,53 @@ Anteil an der Gesamtvarianz
 ```{r}
 summary(pca_cov)
 summary(pca_cor)
+
+#Loadings von HKA1:
+pca_cov$loadings
+
 ```
 
-Nach der HKA auf Basis der Kovarianzmatrix ergibt sich eine Reduktion auf die ersten 3 Hauptkomponenten, da hier der Screeplot abflacht und bereit 93% der Varianz ausmachen. Auf Basis der Korrelationsmatrix würde man allerdings nur auf 4 Komponenten reduzieren, da hier erst eine Gesamtvariant von 93% erreicht wird.
+Nach der HKA auf Basis der Kovarianzmatrix ergibt sich eine Reduktion auf die ersten 3 Hauptkomponenten, da hier der Screeplot abflacht und bereits ~93% der Varianz ausmacht. Auf Basis der Korrelationsmatrix würde man allerdings nur auf 4 Komponenten reduzieren, da hier erst eine Gesamtvarianz von ~93% erreicht wird.
 
-# TODO: Für welche der beiden Hauptkomponentenanalysen aus Teil a) sollten die Loadings überhaupt interpretiert werden? Interpretieren Sie die entsprechenden Loadings der ersten Hauptkomponente
+Laut Folie 337 werden für Loadings implizit unkorrelierte Merkmale angenommen. Daher werden wir sie für HKA1 interpretieren.
+Loadings bilden die Korrelation zw. dem jew. Merkmal und der HK ab.
+Demnach ist die Korrelation von HK1 und "Length" verschwindend gering. Eine leichte neg. Korrelation besteht zu den "Height" Merkmalen und zu "Inner.Frame.upper".
+"Inner.Frame.lower" ist negativ, "Diagonal" ist positiv mit HK1 stark bis mittelmäßig korreliert.
+Loadings werden im späteren Biplot als rote Pfeilvektoren abgebildet.
+
 
 ### c)
 Biplot
 ```{r}
+###################### Interpretationshilfen ######################
+#Struktur
+plot(pca_cov$scores[,1], pca_cov$scores[,2],col=c('red', 'green')[as.numeric(daten.class)], xlab = "Comp.1", ylab = "Comp.2", main="COV Scores") #green = genuine / red = counterfeit
+plot(pca_cor$scores[,1], pca_cor$scores[,2],col=c('red', 'green')[as.numeric(daten.class)], xlab = "Comp.1", ylab = "Comp.2", main="COR Scores") #green = genuine / red = counterfeit
 
-biplot(pca_cov, main="COV")
-biplot(pca_cor, main="COR")
+#Korrelation von Daten und deren 2 HKn mit dem meisten Einfluss (hilfreich bei der Interpretation von biplots):
+cor(daten.num, pca_cov$scores[,1:2])
+cor(daten.num, pca_cor$scores[,1:2])
+###################################################################
+
+#Plot-Befehle in die Konsole eingeben & dann zoomen...
+biplot(pca_cov, main="COV", scale = 0)
+biplot(pca_cor, main="COR", scale = 0)
 
 ```
 
 
 Interpretation:
-# TODO: Welche Scores-Struktur liegt vor? Vergleichen und interpretieren Sie die Bi-Plots.
+Die Scoresstruktur ist in beiden Fällen "interessant" (vgl. F 359, Stetige Modelle Dimensionsreduktion.pdf)...
+So sind die Punktwölkchen der jew. Klassen, bis auf wenige Ausnahmen, relativ klar voneinander abgegrenzt, bilden also sog. Cluster. Zugleich weisen ihre räumlichen Ausdenungen eine gewisse Symetire auf. Beim Ausmaß der Streuung weisen die Klassen lediglich in HKA der Kovarianzen einen merklichen Unterschied auf.
+
+Biplot 1 (HKA auf Basis von Kovarianzen):
+Die Merkmale "Inner.Frame.lower" "Inner.Frame.upper" und "Diagonal" korrelieren nicht bzw. kaum miteiandner. "Height.left" und "Height.right" dagegen schon, korrelieren allerdings kaum mit den HKn. Gleiches gilt auch für "Length".
+Der Plot liefert keine nenennswerten Erkenntnisse.
+
+Biplot 1 (HKA auf Basis von Korrelationen):
+Die Merkmale "Length" und "Diagonal" korrlieren kaum miteinander. "Height.left" und "Height.right" korrelieren dagegen recht stark miteinander. Das Gleiche gilt in abgeschwächter Form auch für  "Inner.Frame.lower" und "Inner.Frame.upper".
+Dementsprechend sind sowohl die Höhe auf beiden Seiten der Banknote, als auch die Abstände der inneren Rahmens zur unteren und oberen Grenze, jeweils in ihren beiden Ausprägungen zusammen, hilfreich dabei gefälschte Banknoten von echten zu unterscheiden.
+
 
 ## Aufgabe 4
 
