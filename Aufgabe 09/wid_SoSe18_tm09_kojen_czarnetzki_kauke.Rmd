@@ -127,14 +127,22 @@ Einlesen der Daten
 daten <- read.table("bank.txt")
 ```
 
+
 ### a)
 HKA auf Basis von Kovarianzen:
 ```{r}
+daten.num <- daten[,1:6]
+daten.class <- daten[,7]
+
+pca_cov <- prcomp(daten.num, scale. = F) # in man: princomp(USArrests, cor = TRUE) # =^= prcomp(USArrests, scale=TRUE)
 
 ```
 
 HKA auf Basis von Korrelationen:
 ```{r}
+
+pca_cor <- prcomp(daten.num, scale. = T)
+
 
 ```
 
@@ -142,6 +150,12 @@ HKA auf Basis von Korrelationen:
 
 Screeplot
 ```{r}
+
+summary(pca_cov)
+summary(pca_cor)
+
+screeplot(pca_cov)
+screeplot(pca_cor)
 
 ```
 
@@ -153,6 +167,9 @@ Anteil an der Gesamtvarianz
 ### c)
 Biplot
 ```{r}
+
+biplot(pca_cov, main="COV")
+biplot(pca_cor, main="COR")
 
 ```
 
