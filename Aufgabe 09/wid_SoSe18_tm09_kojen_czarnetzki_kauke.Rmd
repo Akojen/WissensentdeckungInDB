@@ -143,7 +143,6 @@ HKA auf Basis von Korrelationen:
 
 pca_cor <- prcomp(daten.num, scale. = T)
 
-
 ```
 
 ### b)
