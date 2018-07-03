@@ -25,25 +25,37 @@ Learner
 # und Random Forest mit 5 und mit 500 Bäumen. Visualisieren Sie die Entscheidungsgrenzen
 # (plotLearnerPrediction)
 
-#Daten:
-normals <- mlbench.2dnormals(500, 2)
-circles <- mlbench.circle(500, 2)
-spirals <- mlbench.spirals(500, cycles = 2)
-
+learners = list(
+  makeLearner("classif.naiveBayes"),
+  makeLearner("classif.knn", k = 3),
+  makeLearner("classif.knn", k = 21),
+  makeLearner("classif.svm", kernel = "linear"),
+  makeLearner("classif.svm", kernel = "radial"),
+  makeLearner("classif.rpart"),
+  makeLearner("classif.randomForest", ntree=5),
+  makeLearner("classif.randomForest", ntree=500)
+  #makeLearner("classif.adaboostm1")
+)
 
 ```
 Tasks
 ```{r}
-#to do: Wie in älteren Übungen. Tasks & Learner in liste packen und dann (mit Schleife?) plotten 
-normalsTask = makeClassifTask(data = normals, target = "Class")
-model = train(makeLearner("classif.naiveBayes"), task)
-
+tasks = list(
+  makeClassifTask(id = "2dnormals", target = "classes", data = do.call(data.frame, mlbench.2dnormals(500, 2))),
+  makeClassifTask(id = "smiley", target = "classes", data = do.call(data.frame, mlbench.smiley(500, 0.1, 0.05))),
+  makeClassifTask(id = "cassini", target = "classes", data = do.call(data.frame, mlbench.cassini(5000)))
+)
 ```
 
 
 Plots
 ```{r, fig.pos = "p", fig.height = 4}
-
+set.seed(1273)
+for (tsk in tasks) {
+  for (lrn in learners) {
+    print(plotLearnerPrediction(lrn, task = tsk))
+  }
+}
 ```
 
 
