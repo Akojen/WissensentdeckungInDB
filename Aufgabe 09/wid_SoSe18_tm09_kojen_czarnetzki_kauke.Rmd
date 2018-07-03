@@ -33,8 +33,8 @@ learners = list(
   makeLearner("classif.svm", kernel = "radial"),
   makeLearner("classif.rpart"),
   makeLearner("classif.randomForest", ntree=5),
-  makeLearner("classif.randomForest", ntree=500)
-  #makeLearner("classif.adaboostm1")
+  makeLearner("classif.randomForest", ntree=500),
+  makeLearner("classif.adaboostm1")
 )
 
 ```
@@ -60,7 +60,9 @@ for (tsk in tasks) {
 
 
 ### b)
-
+2dnormals: Die Trennung der beiden Klassen ist ausschließlich bei knn ohne Übergang. Dabei fällt auf, dass bei einer Tiefe von 21 die Trennung der Klassen eindeutiger, weniger "verschwommen" und abgeschlossen ist. Bei dem Random Forest lässt sich erkennen, dass bei einer kleinen Zahl an Bäumen wesentlich Bereiche nicht klassifiziert werden. Das Gesamtbild sich aber bereits sehr ähnelt mit dem vieler Bäume.
+Smiley: Hier fällt insbesondere die Klassifizierung des Entscheidungsbaums auf, der ausschließlich Geraden verwendet, um die Klassifizierung anzugeben. Ähnlich ist es mit der SVM, die nur schwache Kurven verwendet. Der Random Forest bildet als einziges einen Smiley mit verschwommenen Übergängen. Bei kNN ist kaum ein Unterschied zwischen den beiden Tiefen zu erkennen.
+Cassini: Hier ist es nahezu keinen Unterschied bei kNN zwischen den beiden Tiefen. Die SVM und der Entscheidungsbaum unterteilen am geradlinigsten und fallen auf, da sie dadurch insbesondere die Klasse 3 am wenigsten genau einteilen. Bei dem Random Forest ist auffällig, dass die geringere Tiefe ein Bild der Klassifikationen ergibt, das näher an denen der anderen Verfahren ist.
 
 
 
