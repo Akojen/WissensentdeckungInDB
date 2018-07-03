@@ -116,18 +116,23 @@ eigenVec_ <- eigen(cor)$vector
 Z_ <- eigenVec_ %*% cor
 varZ_ <- var(Z_)
 
+print(eigenVec_)
 print(Z_)
 ```
 
 
 ```{r}
 ```
+$$ 
+g_1^* = \begin{pmatrix}0.7071068\\-0.7071068\end{pmatrix} \\
+g_2^* = \begin{pmatrix}0.7071068\\0.7071068\end{pmatrix}
+$$
 Hauptkomponenten bzw. Scores $z_1$ und $z_2$:
 $$
-z_1 = \begin{pmatrix}0.2598932\\-0.2598932\end{pmatrix}
+z_1^* = \begin{pmatrix}0.2598932\\-0.2598932\end{pmatrix}
 $$
 $$
-z_2 = \begin{pmatrix}1.1543204\\1.1543204\end{pmatrix}
+z_2^* = \begin{pmatrix}1.1543204\\1.1543204\end{pmatrix}
 $$
 
 Varianzanteil
@@ -141,7 +146,7 @@ cat("\nAnteil der ersten Hauptkomponente ist ", anteil2, "\n")
 ```
 
 ### c)
-
+Auf Basis der Korrelationsmatrix ist der Anteil der ersten Hauptkomponente nur noch knapp halb so groß wie zuvor. Zudem stehen die Werte der Loading- und Scorevektoren hier im Verhältnis 1:1, wo sie zuvor auf 2:1 berechnet wurden. Wenn die Skalen verschieden sind, liefern beide Methoden unterschiedliche Ergebnisse. Daher war bei den Banknoten nicht von gleichen Ergebnissen auszugehen.
 
 ## Aufgabe 3
 Einlesen der Daten
@@ -220,7 +225,7 @@ biplot(pca_cor, main="COR", scale = 0)
 
 Interpretation:
 Die Scoresstruktur ist in beiden Fällen "interessant" (vgl. F 359, Stetige Modelle Dimensionsreduktion.pdf)...
-So sind die Punktwölkchen der jew. Klassen, bis auf wenige Ausnahmen, relativ klar voneinander abgegrenzt, bilden also sog. Cluster. Zugleich weisen ihre räumlichen Ausdenungen eine gewisse Symetire auf. Beim Ausmaß der Streuung weisen die Klassen lediglich in HKA der Kovarianzen einen merklichen Unterschied auf.
+So sind die Punktwölkchen der jew. Klassen, bis auf wenige Ausnahmen, relativ klar voneinander abgegrenzt, bilden also sog. Cluster. Zugleich weisen ihre räumlichen Ausdenungen eine gewisse Symmetrie auf. Beim Ausmaß der Streuung weisen die Klassen lediglich in HKA der Kovarianzen einen merklichen Unterschied auf.
 
 Biplot 1 (HKA auf Basis von Kovarianzen):
 Die Merkmale "Inner.Frame.lower" "Inner.Frame.upper" und "Diagonal" korrelieren nicht bzw. kaum miteiandner. "Height.left" und "Height.right" dagegen schon, korrelieren allerdings kaum mit den HKn. Gleiches gilt auch für "Length".
