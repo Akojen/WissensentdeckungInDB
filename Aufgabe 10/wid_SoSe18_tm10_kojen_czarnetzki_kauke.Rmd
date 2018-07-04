@@ -54,6 +54,16 @@ names(train)[8] <- 'virginica'
 
 ### a)
 ```{r}
+data = list(
+ read.table("blobs.csv", header=TRUE, sep = ","),
+ read.table("circles.csv", header=TRUE, sep = ","),
+ read.table("moons.csv", header=TRUE, sep = ","),
+ read.table("random.csv", header=TRUE, sep = ",")
+)
+
+for (dataSet in data) {
+    plot(dataSet)
+}
 ```
 
 ### b)
