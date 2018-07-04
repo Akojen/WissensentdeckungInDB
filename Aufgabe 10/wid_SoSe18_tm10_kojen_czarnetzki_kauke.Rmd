@@ -25,6 +25,60 @@ YTest <- as.numeric(test$Species == "virginica")
 train <- iris[-idx,]
 XTrain <- train[,1:4]
 YTrain <- as.numeric(train$Species == "virginica")
+
+#Gradient descent:
+
+#A5 Eingaben:
+weights <- rep(0, 4)
+b <- 0
+NSteps = 100
+Eta = 0.1
+#Eta = max( eigen( XTrain )$values )
+
+f <- function(x) {
+  return(sigmoid(as.numeric(x) %*% as.numeric(weights)+b))
+}
+
+df <- function(x) {
+  return(f(x)*(1-f(x)))
+}
+
+ell <- function(x, y) {
+  return (1/2 * (y - f(x))^2)
+}
+
+dell <- function(x, y) {
+  err <- (y - f(x))
+  return(-err*df(x))
+}
+
+sigmoid <- function(z) {
+  return(1/(1+exp(-z)))
+}
+
+errs <- c()
+lastError <- Inf
+
+for(i in 1:NSteps) {
+ for (j in 1:nrow(XTrain)){
+   
+    del <- dell(XTrain[j,], YTrain[j])
+    weights <- weights + Eta * -del * XTrain[j,]
+    b <- b + Eta * -del
+    rss <- ell(XTrain[j,], YTrain[j])
+    errs<- c(errs, rss)
+ }
+  avgErr <- mean(errs)
+  cat("Step ", i  ,":avg RSS: ", avgErr , "\n")
+
+  if(lastError < avgErr){
+    cat("\n\nGets bigger!!!\n\n")
+  }
+  
+  lastError <- avgErr
+  errs <- c()
+}
+
 ```
 
 
@@ -82,18 +136,38 @@ rownames(daten) = names
 ```
 
 ## a)
+```{r}
+
+```
 
 ## b)
+```{r}
+
+```
 
 ## c)
+```{r}
+
+```
 
 ## d)
+```{r}
 
+```
 
 ## Aufgabe 4
 
 ### a)
+```{r}
+
+```
 
 ### b)
+```{r}
+
+```
 
 ### c)
+```{r}
+
+```

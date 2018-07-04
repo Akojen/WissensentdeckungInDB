@@ -15,7 +15,7 @@ expand.grid.alt <- function(seq1,seq2) {
         c(t(matrix(rep.int(seq2, length(seq1)), nrow=length(seq2)))))
 }
 
-f <- function(x) {
+f <- function(x) { #Modellfunktion
   c = theta[1]
   as = as.numeric(x)*theta[2:14]
   tmp = outer(as.numeric(x), as.numeric(x))
@@ -24,7 +24,7 @@ f <- function(x) {
   return(sum(c(c,as,bs)))
 }
 
-df <- function(x) {
+df <- function(x) { #Modellfunktion (part. Ableitung)
   dC = 1
   dAs = as.numeric(x)
   tmp = outer(as.numeric(x), as.numeric(x))
@@ -33,13 +33,13 @@ df <- function(x) {
   return(c(dC,dAs,dBs))
 }
 
-ell <- function(X, Y) {
+ell <- function(X, Y) { #Verlustfunktion
   preds = apply(X, 1, f)
   error = 0.5*(preds - Y)*(preds-Y)
   return(sum(error))
 }
 
-dell <- function(X,Y) {
+dell <- function(X,Y) { #Verlustfunktion (part. Abl.)
   preds = apply(X, 1, f)
   diff = preds - Y
   gradients = matrix(apply(X, 1, df), nrow=length(theta), ncol=dim(X)[1])
@@ -53,7 +53,7 @@ rmse <- function(X,Y) {
 }
 
 main <- function() {
-  data <- read.table("/home/jonas/Dokumente/Workspace/R/WiD_SS18/Aufgabe 05/housing.csv", header=TRUE, sep = ",")
+  data <- read.table("housing.csv", header=TRUE, sep = ",")
   X <- data[1:13]
   Y <- unlist(data[14]) # needed for dell computation so that t(t(gradients) * diff) works
   
