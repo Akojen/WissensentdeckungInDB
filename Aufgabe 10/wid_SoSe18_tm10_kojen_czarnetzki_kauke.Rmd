@@ -137,6 +137,29 @@ rownames(daten) = names
 
 ## a)
 ```{r}
+plot(daten, col = c("green", "red", "green", "blue", "orange"), pch = row.names(daten))
+print("Erklärtung: Deutschland und Irland bilden für mich auf den ersten Blick einen Cluster, daher stimmen ihre Farben im Plot überein.")
+
+euclDistMtx <- function (daten) {
+  n <- nrow(daten)
+  eDmtx <- matrix(c(rep(0,n*n)), nrow=n, ncol=n)
+  dimnames(eDmtx) = list(names, names)
+  
+  for (i in 1:5) {
+    for (j in 1:5) {
+      eDmtx[i,j] <- sqrt( (daten[j,1] - daten[i,1])^2 + (daten[j,2] - daten[i,2])^2)
+    }
+  }
+  return(eDmtx)
+}
+euclDist <- euclDistMtx(daten)
+
+##########################Test##########################
+as.data.frame(euclDist)
+cat("\n")
+probe <- dist(daten, method = "euclidean", diag = T, upper = T)
+probe
+########################################################
 
 ```
 
@@ -152,8 +175,33 @@ rownames(daten) = names
 
 ## d)
 ```{r}
+normDaten <- data.frame(Lebenserwartung = c(rep(0,5)),
+                    Kleinkindersterblichkeitsrate = c(rep(0,5)))
+rownames(normDaten) = names
+
+#Normalisierung mit mean = 0, var <- 1 (& sd = 1) macht keinen Sinn, da nicht wirklich normalisiert wird ~ Xi / 1.
+#Daher: Normalisierung per https://en.wikipedia.org/wiki/Standard_score mit datenspezifischen mean & sd.
+meanX <- mean(daten[,1])
+meanY <- mean(daten[,2])
+sdX <- sd(daten[,1])
+sdY <- sd(daten[,2])
+for (i in 1:nrow(daten)) {
+  normDaten[i,1] <- (daten[i,1] - meanX) / sdX
+  normDaten[i,2] <- (daten[i,2] - meanY) / sdY
+}
+
+normDist <- dist(normDaten, method = "euclidean", diag = T, upper = T)
+
+singleClust <- hclust(normDist, method = "single")
+completeClust <- hclust(normDist, method = "complete")
+
+plot(singleClust)
+plot(completeClust)
 
 ```
+
+#TODO
+Wie viele Cluster würden Sie nun wählen? Vergleichen Sie mit Teilaufgabe a)–c) und erklären Sie eventuelle Unterschiede.
 
 ## Aufgabe 4
 
