@@ -152,8 +152,33 @@ rownames(daten) = names
 
 ## d)
 ```{r}
+normDaten <- data.frame(Lebenserwartung = c(rep(0,5)),
+                    Kleinkindersterblichkeitsrate = c(rep(0,5)))
+rownames(normDaten) = names
+
+#Normalisierung mit mean = 0, var <- 1 (& sd = 1) macht keinen Sinn, da nicht wirklich normalisiert wird ~ Xi / 1.
+#Daher: Normalisierung per https://en.wikipedia.org/wiki/Standard_score mit datenspezifischen mean & sd.
+meanX <- mean(daten[,1])
+meanY <- mean(daten[,2])
+sdX <- sd(daten[,1])
+sdY <- sd(daten[,2])
+for (i in 1:nrow(daten)) {
+  normDaten[i,1] <- (daten[i,1] - meanX) / sdX
+  normDaten[i,2] <- (daten[i,2] - meanY) / sdY
+}
+
+normDist <- dist(normDaten, method = "euclidean", diag = T, upper = T)
+
+singleClust <- hclust(normDist, method = "single")
+completeClust <- hclust(normDist, method = "complete")
+
+plot(singleClust)
+plot(completeClust)
 
 ```
+
+#TODO
+Wie viele Cluster würden Sie nun wählen? Vergleichen Sie mit Teilaufgabe a)–c) und erklären Sie eventuelle Unterschiede.
 
 ## Aufgabe 4
 
