@@ -69,10 +69,10 @@ for(i in 1:NSteps) {
     errs<- c(errs, rss)
  }
   avgErr <- mean(errs)
-  cat("Step ", i  ,":avg RSS: ", avgErr , "\n")
+  #cat("Step ", i  ,":avg RSS: ", avgErr , "\n")
 
   if(lastError < avgErr){
-    cat("\n\nGets bigger!!!\n\n")
+    #cat("\n\nGets bigger!!!\n\n")
   }
   
   lastError <- avgErr
@@ -83,6 +83,8 @@ for(i in 1:NSteps) {
 
 
 ### b)
+
+#TODO: Diskutieren Sie die Unterschiede und die Gemeinsamkeiten zwischen dem Perceptron, der SVM und der logistischen Regression!
 
 ### c)
 ```{r}
@@ -102,6 +104,64 @@ train <- cbind(train, train$Species == 'virginica')
 names(train)[6] <- 'setosa'
 names(train)[7] <- 'versicolor'
 names(train)[8] <- 'virginica'
+
+neuralIris <- function(hiddenLayers){
+  
+  nn <- neuralnet(
+    setosa+versicolor+virginica ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+    data=train, 
+    hidden=hiddenLayers
+  )
+  #plot(nn)
+  
+  comp <- compute(nn, test[-5])
+  pred.weights <- comp$net.result
+  idx <- apply(pred.weights, 1, which.max)
+  pred <- c('setosa', 'versicolor', 'virginica')[idx]
+  freq <- table(pred, test$Species)
+  
+  acc <- sum(diag(freq))/sum(freq)
+  
+  cat("Accuracy with hidden Layers ", hiddenLayers, " :" , acc, "\n")
+}
+
+neuralIris(c(1))
+neuralIris(c(2))
+neuralIris(c(5))
+neuralIris(c(10))
+
+neuralIris(c(1,1))
+neuralIris(c(1,2))
+neuralIris(c(1,5))
+neuralIris(c(1,10))
+
+neuralIris(c(2,1))
+neuralIris(c(2,2))
+neuralIris(c(2,5))
+neuralIris(c(2,10))
+
+neuralIris(c(3,1))
+neuralIris(c(3,2))
+neuralIris(c(3,5))
+neuralIris(c(3,10))
+
+neuralIris(c(1, 1, 1))
+neuralIris(c(2, 2, 2))
+neuralIris(c(5, 5, 5))
+neuralIris(c(10, 10, 10))
+
+neuralIris(c(1, 1, 10))
+neuralIris(c(1, 10, 1))
+neuralIris(c(10, 1, 1))
+
+neuralIris(c(2, 2, 10))
+neuralIris(c(2, 10, 2))
+neuralIris(c(10, 2, 2))
+
+neuralIris(c(5, 5, 10))
+neuralIris(c(5, 10, 5))
+neuralIris(c(10, 5, 5))
+
 ``` 
 
 ## Aufgabe 2
