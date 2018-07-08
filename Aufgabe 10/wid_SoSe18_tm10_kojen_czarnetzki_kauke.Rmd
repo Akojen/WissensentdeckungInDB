@@ -79,6 +79,23 @@ for(i in 1:NSteps) {
   errs <- c()
 }
 
+evaluate <- function(test, target){
+  testResult <- apply(test, 1, f)
+  testResult <- as.numeric(testResult > 0.9 )
+  freq <- table(testResult == target)
+  acc <- freq[names(freq)=="TRUE"]/ nrow(test)
+  return(acc)
+}
+
+accTest <- evaluate(XTest, YTest)
+accTrain <- evaluate(XTrain, YTrain)
+
+cat( "Accuracy in test data: ", accTest, "\n")
+cat( "Accuracy in train data: ", accTrain, "\n")
+
+
+
+
 ```
 
 
@@ -117,6 +134,7 @@ neuralIris <- function(hiddenLayers){
   comp <- compute(nn, test[-5])
   pred.weights <- comp$net.result
   idx <- apply(pred.weights, 1, which.max)
+  print(pred.weights)
   pred <- c('setosa', 'versicolor', 'virginica')[idx]
   freq <- table(pred, test$Species)
   
