@@ -81,7 +81,7 @@ for(i in 1:NSteps) {
 
 evaluate <- function(test, target){
   testResult <- apply(test, 1, f)
-  testResult <- as.numeric(testResult > 0.9 )
+  testResult <- as.numeric(testResult > 0.5 )
   freq <- table(testResult == target)
   acc <- freq[names(freq)=="TRUE"]/ nrow(test)
   return(acc)
@@ -101,7 +101,10 @@ cat( "Accuracy in train data: ", accTrain, "\n")
 
 ### b)
 
-#TODO: Diskutieren Sie die Unterschiede und die Gemeinsamkeiten zwischen dem Perceptron, der SVM und der logistischen Regression!
+Alle Verfahren werden zur Klassifikation eingesetzt.
+Um im Datensatz eine Abgrenzung vorzunehmen, sucht Perceptron sucht nach einer Hyperebene, während SVM den Abstand zw. Supportvektoren maximiert, um eine optimale Hyperebene zu finden, die beide Klassen trennt.
+Dementsprechend ist SVM generell langsamer (Quadratische Optimierung) und lässt sich weniger leicht auf Datenflüssen anwenden (online training).
+SVMs sind deterministisch, logische Regression (LR) sind dagegen probabilistisch und maximieren die Wahrscheinlichkeit, was wiederum Inferenzen auf Daten erlauben kann.
 
 ### c)
 ```{r}
@@ -215,8 +218,10 @@ rownames(daten) = names
 
 ## a)
 ```{r}
-plot(daten, col = c("green", "red", "green", "blue", "orange"), pch = row.names(daten))
-print("Erklärtung: Deutschland und Irland bilden für mich auf den ersten Blick einen Cluster, daher stimmen ihre Farben im Plot überein.")
+plot(daten, col = c("green", "red", "green", "blue", "red"), pch = row.names(daten))
+cat("Erklärtung: Deutschland und Irland sowohl als auch Frankreich und Schweden bilden für uns auf den ersten Blick je einen Cluster, daher stimmen ihre Farben im Plot je überein. Island stellt einen Cluster für sich dar.", "\n")
+
+cat("\n", "Euklidische Distanz:", "\n")
 
 euclDistMtx <- function (daten) {
   n <- nrow(daten)
@@ -232,9 +237,9 @@ euclDistMtx <- function (daten) {
 }
 euclDist <- euclDistMtx(daten)
 
-##########################Test##########################
 as.data.frame(euclDist)
-cat("\n")
+##########################Test##########################
+cat("\n", "Probe mit Dist-Funktion: ", "\n")
 probe <- dist(daten, method = "euclidean", diag = T, upper = T)
 probe
 ########################################################
@@ -243,6 +248,15 @@ probe
 
 ## b)
 ```{r}
+
+##########################Für Teil d)##########################
+singleClust <- hclust(probe, method = "single")
+completeClust <- hclust(probe, method = "complete")
+
+plot(singleClust)
+plot(completeClust)
+########################################################
+
 
 ```
 
@@ -278,8 +292,11 @@ plot(completeClust)
 
 ```
 
-#TODO
-Wie viele Cluster würden Sie nun wählen? Vergleichen Sie mit Teilaufgabe a)–c) und erklären Sie eventuelle Unterschiede.
+Wir würden 3 Cluster wählen ({ISL}, {GER, IRL}, {FRA, SWE})
+In Teilaufgabe a) waren auf den ersten Blick 4 Cluster erkennbar, wobei nur Deutschland und Irland einen vereinigten Cluster bildeten.
+In b) legten die Dendrogramme nahe, dass Island, Frankreich und Schweden auch einen Cluster bilden, wobei die letzten beiden einen Cluster für sich bilden.
+Mit normalisierten Daten in d) bildet Island einen individuellen Cluster, wohingegen Deutschland & Irland als auch Frankreich und Schweden je einen gemeinsamen Cluster bilden, der in einem Obercluster (...) aus den Vieren mündet.
+Der Unterschied ist darauf zurückzuführen, dass die Lebenserwartung (80.7 bis 83) im Vgl. zur Kleinkindersterblichkeitsrate (2.1 bis 3.7) eine geringere Streuung aufwies. Durch die Normalisierung wird dieser Unterschied kaschiert, sodass die intuitive Cluster-Einteilung in a) den Ergebnissen von d) näher kommt als denen aus b) & c).
 
 ## Aufgabe 4
 
