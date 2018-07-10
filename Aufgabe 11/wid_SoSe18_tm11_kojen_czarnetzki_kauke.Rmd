@@ -51,19 +51,26 @@ FP-Growth              &        &                 &                 &           
 
 ### a)
 ```{r}
+# http://adv-r.had.co.nz/Environments.html
 filepath = "words.txt"
 f = file(filepath, "r")
+words <- new.env()
 
 while (TRUE) {
   line = readLines(f, n = 1)
   if (length(line) == 0) {
     break
   }
-  
-  ## TODO: Hier Code einfügen
+  word <- noquote(line)
+  if (is.null(words$word)) { # if line (word) not part of words: add to env.
+    words$word <- 1
+  }
+  else {
+    words$word <- words$word + 1 # else: increase count of line (word)
+  }
 }
 
-## TODO: Hier Code einfügen
+words 
 
 close(f)
 ```
