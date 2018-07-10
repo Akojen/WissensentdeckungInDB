@@ -10,6 +10,7 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+library("dbscan")
 ```
 ## Aufgabe 1
 
@@ -203,11 +204,31 @@ for (dataSet in data) {
 
 ### b)
 ```{r}
+for (dataSet in data) {
+  k1 <- kmeans(x=dataSet, centers=2)
+  plot(dataSet, col = k1$cluster, main="kmeans - 2")  
+  k1 <- kmeans(x=dataSet, centers=3)
+  plot(dataSet, col = k1$cluster, main="kmeans - 3")
+  k1 <- kmeans(x=dataSet, centers=4)
+  plot(dataSet, col = k1$cluster, main="kmeans - 4")
+  
+  db <- dbscan(x=dataSet, eps = 0.03)
+  plot(x=dataSet, col = db$cluster + 1L, main="dbscan - 0.03")  
+  db <- dbscan(x=dataSet, eps = 0.1)
+  plot(x=dataSet, col = db$cluster + 1L, main="dbscan - 0.1") 
+  db <- dbscan(x=dataSet, eps = 1.5)
+  plot(x=dataSet, col = db$cluster + 1L, main="dbscan - 1.5")
+}
 ```
 
 ###c) 
+Während KMEANS die Datensätze in k Bereiche partitioniert, clustert DBScan auf Basis der Dichte. Diesen Unterschied merkt man insbesondere bei den Datensätzen circles und moons. Hier bildet DBScan die zwei Cluster bei entsprechend klein gewähltem maximalen Abstand (Radius) ekt ab.
 
-## Aufgabe 3
+#, während KMEANS den Datensatz immer in die fest gegebene Anzahl Cluster unterteilt# AKMEANS hingegen eignet sich besonders bei Datensätzen, die vollständig voneinander getrennt sind und sich dabei keine Bereiche innerhalb der Dimensionen "teilen", wie im ersten Datensatz blobs zu erkennen ist. Hier unterteilt KMEANS bei passender Anzahl Cluster (k=3) den Datensatz vollständig auf, ohne dass Rauschpunkte übrig bleiben, die durch ein schrittweises Anpassen wie bei DBScan erst noch eliminiert werden müssen.
+
+DBScan eignet sich somit mehr für Datensätze, in denen die Cluster keine größere Streuung besitzen, aber sich in den Dimensionen "überschneiden" können. 
+
+ufgabe 3
 
 ```{r}
 daten <- data.frame(Lebenserwartung = c(80.7, 81.8, 80.8, 83.0, 82.1),
