@@ -1,0 +1,109 @@
+---
+title: "Wissensentdeckung in Datenbanken SoSe 2018"
+subtitle: "Lösungsvorschlag Übungsblatt 11"
+author: "Alexander Kojen, Robin Czarnetzki, Jonas Kauke"  # Hier die Namen aller Gruppenmitglieder eintragen!
+output: pdf_document
+header-includes: 
+  - \usepackage{tikz}
+  - \usepackage{tikz-qtree}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+```
+## Aufgabe 1
+
+### a)
+```{r}
+```
+
+### b)
+```{r}
+```
+
+### c)
+```{r}
+```
+
+### d)
+```{r}
+```
+
+### e)
+
+### f)
+
+## Aufgabe 2
+\begin{table}[]
+\begin{tabular}{lllll}
+\hline
+Algorithmus            & Online & Laufzeit        & Speicher        & Aufgabe        \\ \hline
+Naive Bayes            & nein   & $\mathcal O(N)$ & $\mathcal O(K)$ & Klassifikation \\
+Random Forest          &        &                 &                 &                \\
+Logistische Regression &        &                 &                 &                \\
+Neuronales Netzwerk    &        &                 &                 &                \\
+K-MEANS                &        &                 &                 &                \\
+FP-Growth              &        &                 &                 &                \\ \hline
+\end{tabular}
+\end{table}
+
+## Aufgabe 3
+
+### a)
+```{r}
+filepath = "words.txt"
+f = file(filepath, "r")
+
+while (TRUE) {
+  line = readLines(f, n = 1)
+  if (length(line) == 0) {
+    break
+  }
+  
+  ## TODO: Hier Code einfügen
+}
+
+## TODO: Hier Code einfügen
+
+close(f)
+```
+
+### b)
+```{r}
+filepath = "words.txt"
+f = file(filepath, "r")
+
+while (TRUE) {
+  line = readLines(f, n = 1)
+  if (length(line) == 0) {
+    break
+  }
+  
+  ## TODO: Hier Code einfügen
+}
+
+## TODO: Hier Code einfügen
+
+close(f)
+```
+
+### c)
+
+### d)
+```{r}
+filepath = "words.txt"
+f = file(filepath, "r")
+
+while (TRUE) {
+  line = readLines(f, n = 1)
+  if (length(line) == 0) {
+    break
+  }
+  
+  ## TODO: Hier Code einfügen
+}
+
+## TODO: Hier Code einfügen
+
+close(f)
+```
