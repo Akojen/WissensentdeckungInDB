@@ -12,6 +12,7 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
 library("FSelector")
 library("glmnet")
+library("rpart")
         # die Pakete muessen gegebenenfalls installiert werden!
 ```
 ## Aufgabe 1
@@ -23,13 +24,45 @@ housingData <- read.table("housing.csv", header=TRUE, sep = ",")
 fit <- lm(formula = LABEL ~., data = housingData)
 
 # https://www.rdocumentation.org/packages/lmvar/versions/1.5.0/topics/cv.lm
-corssValid5 <- cv.glmnet(x = as.matrix(housingData[,1:13]), y = housingData[,14], nfolds = 5)
+X <- as.matrix(housingData[,1:13])
+Y <- housingData[,14]
+corssValid5 <- cv.glmnet(x = X, y = Y, nfolds = 5)
 plot(corssValid5)
 
 ```
 
 ### b)
 ```{r}
+set.seed(1234)
+
+# Aus https://cran.r-project.org/web/packages/FSelector/FSelector.pdf
+evaluator <- function(subset) {
+  #k-fold cross validation
+  k <- 5
+  splits <- runif(nrow(housingData))
+  results = sapply(1:k, function(i) {
+    test.idx <- (splits >= (i - 1) / k) & (splits < i / k)
+    train.idx <- !test.idx
+    test <- housingData[test.idx, , drop=FALSE]
+    train <- housingData[train.idx, , drop=FALSE]
+    tree <- rpart(as.simple.formula(subset, "LABEL"), train)
+    error.rate = sum(test$LABEL != predict(tree, test, type="vector")) / nrow(test)
+    return(1 - error.rate)
+  })
+  #print(subset)
+  #print(mean(results))
+  return(mean(results))
+}
+
+fwrdSubset <- forward.search(names(housingData)[-14], evaluator)
+fwrdFormula <- as.simple.formula(fwrdSubset, "LABEL")
+print(fwrdFormula)
+
+fit <- lm(formula = fwrdFormula, data = housingData)
+
+corssValid5Fwd <- cv.glmnet(x = X, y = Y, nfolds = 5)
+plot(corssValid5Fwd)
+cat("Das Feature CRIM wird ausgewählt. Der MSE lässt sich aus dem Plot ablesen.")
 ```
 
 ### c)
