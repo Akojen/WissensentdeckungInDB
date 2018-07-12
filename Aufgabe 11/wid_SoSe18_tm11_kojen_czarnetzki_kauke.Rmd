@@ -10,11 +10,22 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE) # Code wird ausgegeben
+library("FSelector")
+library("glmnet")
+        # die Pakete muessen gegebenenfalls installiert werden!
 ```
 ## Aufgabe 1
 
 ### a)
 ```{r}
+housingData <- read.table("housing.csv", header=TRUE, sep = ",")
+
+fit <- lm(formula = LABEL ~., data = housingData)
+
+# https://www.rdocumentation.org/packages/lmvar/versions/1.5.0/topics/cv.lm
+corssValid5 <- cv.glmnet(x = as.matrix(housingData[,1:13]), y = housingData[,14], nfolds = 5)
+plot(corssValid5)
+
 ```
 
 ### b)
